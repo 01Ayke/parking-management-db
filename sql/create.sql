@@ -8,7 +8,7 @@
 CREATE TABLE vehicule (
     num_immatriculation SERIAL PRIMARY KEY,
     marque VARCHAR(255),
-    date_de_fabric DATE,
+    date_de_fabrication DATE,
     etat VARCHAR(255),
     kilometrage INTEGER
 );
@@ -31,19 +31,8 @@ CREATE TABLE creneau
     date_creneau DATE,
     heure_debut VARCHAR(255),
     heure_fin VARCHAR(255)
-);
-
--- ============================================================
---   Table : Stationnement                                            
--- ============================================================
-
-CREATE TABLE stationnement (
-    id_stationnement SERIAL PRIMARY KEY,
-    date DATE,
-    heure_debut VARCHAR(255),
-    heure_fin VARCHAR(255),
     id_vehicule INTEGER REFERENCES vehicule(num_immatriculation),
-    id_place INTEGER REFERENCES place(id_place)
+    id_place INTEGER REFERENCES place(id_place),
 );
 
 -- ============================================================
@@ -62,7 +51,7 @@ CREATE TABLE commune
 CREATE TABLE parking (
     id_parking SERIAL PRIMARY KEY,
     nom VARCHAR(255),
-    type VARCHAR(255),
+    type_parking VARCHAR(255),
     adresse VARCHAR(255),
     capacite INTEGER,
     id_commune INTEGER REFERENCES commune(id_commune)
@@ -78,28 +67,10 @@ CREATE TABLE tarif (
 );
 
 -- ============================================================
---   Table : Posséder                                            
--- ============================================================
-CREATE TABLE posseder (
-    id_commune INTEGER REFERENCES commune(id_commune),
-    id_tarif INTEGER REFERENCES tarif(id_tarif),
-    PRIMARY KEY (id_commune, id_tarif)
-);
-
--- ============================================================
 --   Table : Appliquer                                            
 -- ============================================================
 CREATE TABLE appliquer (
     id_parking INTEGER REFERENCES parking(id_parking),
     id_tarif INTEGER REFERENCES tarif(id_tarif),
     PRIMARY KEY (id_parking, id_tarif)
-);
-
--- ============================================================
---   Table : Contenir                                            
--- ============================================================
-CREATE TABLE contenir (
-    id_place INTEGER REFERENCES place(id_place),
-    id_parking INTEGER REFERENCES parking(id_parking),
-    PRIMARY KEY (id_place, id_parking)
 );
