@@ -4,7 +4,7 @@
 --    (à cause des clés étrangères).
 -- ============================================================
 
--- DROP TABLE IF EXISTS appliquer CASCADE; ca n'existe pas normalement
+DROP TABLE IF EXISTS appliquer CASCADE;
 DROP TABLE IF EXISTS creneau CASCADE;
 DROP TABLE IF EXISTS place CASCADE;
 DROP TABLE IF EXISTS parking CASCADE;

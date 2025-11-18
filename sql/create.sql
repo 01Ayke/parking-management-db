@@ -30,9 +30,9 @@ CREATE TABLE creneau
     id_creneau SERIAL PRIMARY KEY,
     date_creneau DATE,
     heure_debut VARCHAR(255),
-    heure_fin VARCHAR(255)
+    heure_fin VARCHAR(255),
     id_vehicule INTEGER REFERENCES vehicule(num_immatriculation),
-    id_place INTEGER REFERENCES place(id_place),
+    id_place INTEGER REFERENCES place(id_place)
 );
 
 -- ============================================================
