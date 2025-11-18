@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Parking Manager</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="background.js" defer></script>
+  <script src="client.js" defer></script>
+
+</head>
+<body>
+
+  <div class="container">
+    <h1>Parking Manager</h1>
+
+    <button onclick="getPlaces()" id="btnVoirPlaces">  Voir toutes les places</button>
+    <div id="placesList" class="message"></div>
+    <pre id="out"></pre>
+
+
+    <form id="formEntree" onsubmit="return enter()">
+      <input type="text" id="numEntree" placeholder="Num immatriculation">
+      <button>Entrer</button>
+    </form>
+    
+    <form id="formSortie" onsubmit="return exitCar()">
+      <input type="text" id="numSortie" placeholder="Num immatriculation">
+      <button>Sortir</button>
+    </form>
+    
+  </div>
+
+
+</body>
+</html>  
+
