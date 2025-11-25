@@ -6,31 +6,116 @@
   <link rel="stylesheet" href="style.css">
   <script src="background.js" defer></script>
   <script src="client.js" defer></script>
-
 </head>
 <body>
 
   <div class="container">
     <h1>Parking Manager</h1>
 
-    <button onclick="getPlaces()" id="btnVoirPlaces">  Voir toutes les places</button>
-    <div id="placesList" class="message"></div>
-    <pre id="out"></pre>
+    <section>
+      <h2>Gestion simple du parking</h2>
 
+      <button id="btnPlaces">Voir toutes les places</button>
+      <pre id="out"></pre>
 
-    <form id="formEntree" onsubmit="return enter()">
-      <input type="text" id="numEntree" placeholder="Num immatriculation">
-      <button>Entrer</button>
-    </form>
-    
-    <form id="formSortie" onsubmit="return exitCar()">
-      <input type="text" id="numSortie" placeholder="Num immatriculation">
-      <button>Sortir</button>
-    </form>
-    
+      <div class="row">
+        <input type="text" id="numEntree" placeholder="Num immatriculation">
+        <button id="btnEnter">Entrer</button>
+      </div>
+      
+      <div class="row">
+        <input type="text" id="numSortie" placeholder="Num immatriculation">
+        <button id="btnExit">Sortir</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Consultation</h2>
+
+      <div class="block">
+        <h3>Informations globales</h3>
+        <button id="btnInfos">Infos parkings / voitures / places</button>
+      </div>
+
+      <div class="block">
+        <h3>Voitures par parking</h3>
+        <input type="number" id="idParkingVp" placeholder="ID parking">
+        <button id="btnVoituresParParking">Afficher</button>
+      </div>
+
+      <div class="block">
+        <h3>Parkings par commune</h3>
+        <input type="number" id="idCommunePc" placeholder="ID commune">
+        <button id="btnParkingsParCommune">Afficher</button>
+      </div>
+
+      <div class="block">
+        <h3>Parkings saturés à un jour donné</h3>
+        <input type="date" id="jourSatures">
+        <button id="btnParkingsSatures">Afficher</button>
+      </div>
+
+      <div class="block">
+        <h3>Places disponibles par parking à un moment donné</h3>
+        <input type="number" id="idParkingPd" placeholder="ID parking">
+        <input type="date" id="jourPd">
+        <input type="time" id="heurePd">
+        <button id="btnPlacesDisponibles">Afficher</button>
+      </div>
+
+      <div class="block">
+        <h3>Voitures garées dans ≥ 2 parkings le même jour</h3>
+        <input type="date" id="jourMulti">
+        <button id="btnVoituresMultiParkings">Afficher</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Statistiques</h2>
+
+      <div class="block">
+        <button id="btnMoyPlacesDispo">
+          Moyenne du nombre de places disponibles par parking
+        </button>
+      </div>
+
+      <div class="block">
+        <button id="btnDureeMoy">
+          Durée moyenne de stationnement par parking
+        </button>
+      </div>
+
+      <div class="block">
+        <button id="btnCoutMoyMensuel">
+          Coût moyen mensuel du stationnement par véhicule
+        </button>
+      </div>
+
+      <div class="block">
+        <button id="btnParkingsMoinsUtilises">
+          Classement des parkings les moins utilisés
+        </button>
+      </div>
+
+      <div class="block">
+        <button id="btnParkingsPlusRentables">
+          Parkings les plus rentables par commune et par mois
+        </button>
+      </div>
+
+      <div class="block">
+        <button id="btnCommunesPlusDemandees">
+          Communes les plus demandées par semaine
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Résultats</h2>
+      <div id="results"></div>
+    </section>
+
   </div>
 
-
 </body>
-</html>  
-
+</html>
