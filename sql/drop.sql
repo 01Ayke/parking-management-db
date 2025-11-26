@@ -1,14 +1,8 @@
-
--- ============================================================
---   On supprime d’abord les tables qui dépendent d’autres tables
---    (à cause des clés étrangères).
--- ============================================================
-
--- DROP TABLE IF EXISTS appliquer CASCADE; ca n'existe pas normalement
-DROP TABLE IF EXISTS creneau CASCADE;
-DROP TABLE IF EXISTS place CASCADE;
-DROP TABLE IF EXISTS parking CASCADE;
-DROP TABLE IF EXISTS tarif CASCADE;
-DROP TABLE IF EXISTS vehicule CASCADE;
-DROP TABLE IF EXISTS commune CASCADE;
-
+DROP TABLE IF EXISTS creneau;
+DROP TABLE IF EXISTS appliquer;
+DROP TABLE IF EXISTS abonnement;
+DROP TABLE IF EXISTS place;
+DROP TABLE IF EXISTS parking;
+DROP TABLE IF EXISTS vehicule;
+DROP TABLE IF EXISTS tarif;
+DROP TABLE IF EXISTS commune;

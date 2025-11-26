@@ -86,7 +86,7 @@ CREATE TABLE appliquer (
 -- ============================================================
 --   Table : Abonnement                                            
 -- ============================================================
-CREATE TABLE Abonnement (
+CREATE TABLE abonnement (
     id_abonnement SERIAL PRIMARY KEY,
     date_debut_abonnement DATE,
     date_fin_abonnement DATE,
