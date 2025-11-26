@@ -10,10 +10,6 @@ db.serialize(() => {
   
   db.run('PRAGMA foreign_keys = ON');
 
-  
-  
-  
-
   db.run(`
     CREATE TABLE IF NOT EXISTS commune (
       id_commune   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +22,6 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS parking (
       id_parking    INTEGER PRIMARY KEY AUTOINCREMENT,
       nom           TEXT,
-      numero        INTEGER,
       type_parking  TEXT,
       adresse       TEXT,
       capacite      INTEGER,
@@ -40,7 +35,7 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS vehicule (
       num_immatriculation TEXT PRIMARY KEY,
       marque              TEXT,
-      date_mise_en_circ   TEXT,   -- YYYY-MM-DD
+      date_de_fabrication   TEXT,   -- YYYY-MM-DD
       kilometrage         INTEGER,
       etat                TEXT
     )
@@ -89,22 +84,17 @@ db.serialize(() => {
 
   
   
-  
+db.run("DELETE FROM appliquer");
+db.run("DELETE FROM creneau");
+db.run("DELETE FROM place");
+db.run("DELETE FROM tarif");
+db.run("DELETE FROM parking");
+db.run("DELETE FROM vehicule");
+db.run("DELETE FROM commune");
 
-  
-  db.run('DELETE FROM appliquer');
-  db.run('DELETE FROM creneau');
-  db.run('DELETE FROM place');
-  db.run('DELETE FROM tarif');
-  db.run('DELETE FROM parking');
-  db.run('DELETE FROM vehicule');
-  db.run('DELETE FROM commune');
+db.run("DELETE FROM sqlite_sequence WHERE name IN ('commune', 'parking', 'place', 'tarif')");
 
-  
-  
-  
 
-  
   const insertCommune = db.prepare(`
     INSERT INTO commune(code_postal, nom_commune)
     VALUES (?, ?)
@@ -116,16 +106,16 @@ db.serialize(() => {
 
   
   const insertParking = db.prepare(`
-    INSERT INTO parking(nom, numero, type_parking, adresse, capacite, id_commune, tarif_horaire)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO parking(nom, type_parking, adresse, capacite, id_commune, tarif_horaire)
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
 
   
-  insertParking.run('Parking A', 1, 'extérieur', 'Allée A', 3, 1, 2.0);
-  insertParking.run('Parking B', 2, 'souterrain', 'Allée B', 2, 1, 1.5);
+  insertParking.run('Parking A',  'extérieur', 'Allée A', 3, 1, 2.0);
+  insertParking.run('Parking B',  'souterrain', 'Allée B', 2, 1, 1.5);
 
   
-  insertParking.run('Parking C', 1, 'extérieur', 'Rue C', 4, 2, 1.8);
+  insertParking.run('Parking C',  'extérieur', 'Rue C', 4, 2, 1.8);
 
   insertParking.finalize();
 
@@ -134,12 +124,6 @@ db.serialize(() => {
     INSERT INTO place(numero, etat, id_parking)
     VALUES (?, 'libre', ?)
   `);
-
-  
-  
-  
-  
-
   
   insertPlace.run(1, 1);
   insertPlace.run(2, 1);
@@ -159,7 +143,7 @@ db.serialize(() => {
 
   
   const insertVehicule = db.prepare(`
-    INSERT INTO vehicule(num_immatriculation, marque, date_mise_en_circ, kilometrage, etat)
+    INSERT INTO vehicule(num_immatriculation, marque, date_de_fabrication, kilometrage, etat)
     VALUES (?, ?, ?, ?, ?)
   `);
 
