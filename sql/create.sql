@@ -32,7 +32,9 @@ CREATE TABLE place (
     num_place VARCHAR(255),
     etat_place VARCHAR(255),
     id_parking INTEGER NOT NULL,
+    id_categorie_place INTEGER NOT NULL,
     CONSTRAINT fk_place_parking FOREIGN KEY(id_parking) REFERENCES parking(id_parking)
+    CONSTRAINT fk_place_categorie_place FOREIGN KEY(id_categorie_place) REFERENCES categorie_place(id_categorie_place)
 );
 
 -- ============================================================
@@ -44,14 +46,38 @@ CREATE TABLE vehicule (
     marque_vehicule VARCHAR(255),
     date_de_fabrication DATE,
     etat_vehicule VARCHAR(255),
-    kilometrage INTEGER
+    kilometrage INTEGER,
+    id_utilisateur INTEGER NOT NULL,
+    CONSTRAINT fk_vehicule_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur)
 );
 
 -- ============================================================
---   Table : Créneau                                            
+--   Table : Posséder AU                                            
 -- ============================================================
-CREATE TABLE creneau (
-    id_creneau SERIAL PRIMARY KEY,
+CREATE TABLE posseder_au (
+    id_vehicule INTEGER NOT NULL,
+    id_abonnement INTEGER NOT NULL,
+    CONSTRAINT fk_posseder_au_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule),
+    CONSTRAINT fk_posseder_au_abonnement FOREIGN KEY(id_abonnement) REFERENCES abonnement(id_abonnement),
+    PRIMARY KEY (id_vehicule, id_abonnement)
+);
+
+-- ============================================================
+--   Table : Posséder AV                                        
+-- ============================================================
+CREATE TABLE posseder_av (
+    id_utilisateur INTEGER NOT NULL,
+    id_abonnement INTEGER NOT NULL,
+    CONSTRAINT fk_posseder_au_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur),
+    CONSTRAINT fk_posseder_au_abonnement FOREIGN KEY(id_abonnement) REFERENCES abonnement(id_abonnement),
+    PRIMARY KEY (id_utilisateur, id_abonnement)
+);
+
+-- ============================================================
+--   Table : Stationnement                                            
+-- ============================================================
+CREATE TABLE stationnement (
+    id_stationnement SERIAL PRIMARY KEY,
     date_debut DATE,
     date_fin DATE,
     heure_debut VARCHAR(255),
@@ -59,8 +85,10 @@ CREATE TABLE creneau (
     mode_paiement VARCHAR(255),
     id_vehicule INTEGER NOT NULL,
     id_place INTEGER NOT NULL,
-    CONSTRAINT fk_creneau_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule),
-    CONSTRAINT fk_creneau_place FOREIGN KEY(id_place) REFERENCES place(id_place)
+    id_utilisateur INTEGER NOT NULL,
+    CONSTRAINT fk_stationnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule),
+    CONSTRAINT fk_stationnement_place FOREIGN KEY(id_place) REFERENCES place(id_place),
+    CONSTRAINT fk_stationnement_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES place(id_utilisateur)
 );
 
 -- ============================================================
@@ -69,11 +97,38 @@ CREATE TABLE creneau (
 CREATE TABLE tarif (
     id_tarif SERIAL PRIMARY KEY,
     prix FLOAT,
-    type_jour VARCHAR(255),
     heure_debut_tarif VARCHAR(255),
-    heure_fin_tarif VARCHAR(255),
-    date_debut_tarif DATE,
-    date_fin_tarif DATE
+    heure_fin_tarif VARCHAR(255)
+);
+
+-- ============================================================
+--   Table : Utilisateur                                            
+-- ============================================================
+CREATE TABLE utilisateur (
+    id_utilisateur SERIAL PRIMARY KEY,
+    p_identite VARCHAR(255)
+);
+
+-- ============================================================
+--   Table : Compte                                            
+-- ============================================================
+CREATE TABLE compte (
+    id_compte SERIAL PRIMARY KEY,
+    identifiant VARCHAR(255),
+    mot_de_passe VARCHAR(255),
+    date_creation DATE,
+    id_utilisateur INTEGER NOT NULL,
+    CONSTRAINT fk_compte_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+);
+
+-- ============================================================
+--   Table : Catégorie place                                            
+-- ============================================================
+CREATE TYPE genre_type AS ENUM ('Voiture', 'Moto', 'Electrique', 'Van');
+
+CREATE TABLE categorie_place (
+    id_categorie_place SERIAL PRIMARY KEY,
+    type_place genre_type
 );
 
 -- ============================================================
@@ -81,19 +136,31 @@ CREATE TABLE tarif (
 -- ============================================================
 CREATE TABLE appliquer (
     id_parking INTEGER REFERENCES parking(id_parking),
+    id_categorie_place INTEGER REFERENCES categorie_place(id_categorie_place),
     id_tarif INTEGER REFERENCES tarif(id_tarif),
-    PRIMARY KEY (id_parking, id_tarif)
+    PRIMARY KEY (id_parking, id_categorie_place)
 );
 
 -- ============================================================
 --   Table : Abonnement                                            
 -- ============================================================
+CREATE TYPE genre_abonnement AS ENUM ('AU','AV');
+
 CREATE TABLE abonnement (
     id_abonnement SERIAL PRIMARY KEY,
     date_debut_abonnement DATE,
     date_fin_abonnement DATE,
-    type_abonnement VARCHAR(255),
+    type_abonnement genre_abonnement,
     tarif_mensuel_abonnement FLOAT,
-    id_vehicule INTEGER NOT NULL,
     CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
+);
+
+-- ============================================================
+--   Table : Proposer A[UV]                                         
+-- ============================================================
+CREATE TABLE proposer_auv (
+    id_abonnement INTEGER PRIMARY KEY NOT NULL,
+    id_parking INTEGER NOT NULL,
+    CONSTRAINT fk_proposer_au_abonnement FOREIGN KEY(id_abonnement) REFERENCES abonnement(id_abonnement),
+    CONSTRAINT fk_proposer_au_parking FOREIGN KEY(id_parking) REFERENCES parking(id_parking)
 );
