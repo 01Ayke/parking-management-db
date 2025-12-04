@@ -123,10 +123,26 @@ CREATE TABLE stationnement (
 --   Table : Tarif                                            
 -- ============================================================
 CREATE TABLE tarif (
-    id_tarif SERIAL PRIMARY KEY,
+    id_tarif SERIAL PRIMARY KEY
+);
+
+-- ============================================================
+--   Table : Creneau                                            
+-- ============================================================
+CREATE TABLE creneau (
+    id_creneau SERIAL PRIMARY KEY,
     prix FLOAT,
-    heure_debut_tarif VARCHAR(255),
-    heure_fin_tarif VARCHAR(255)
+    debut_creneau VARCHAR(255), -- distance in minutes/seconds from midnight !!!
+    fin_creneau VARCHAR(255)
+);
+
+-- ============================================================
+--   Table : Diviser                                            
+-- ============================================================
+CREATE TABLE diviser (
+    id_creneau INTEGER REFERENCES creneau(id_creneau),
+    id_tarif INTEGER REFERENCES tarif(id_tarif),
+    PRIMARY KEY (id_creneau,id_tarif)
 );
 
 -- ============================================================
