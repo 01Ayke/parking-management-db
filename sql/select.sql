@@ -54,7 +54,7 @@ ORDER BY p.nom_parking;
 
 -- ========= 3) Parkings saturés à l’instant :'instant_ts' =========
 -- Version "end-of-day" pour NULL heure_fin/date_fin (ongoing = actif jusqu’à 23:59:59 du jour)
-stationnements_intervalles AS (
+WITH stationnements_intervalles AS (
     SELECT
         s.id_stationnement,
         s.id_place,

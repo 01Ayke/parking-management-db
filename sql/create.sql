@@ -75,9 +75,9 @@ CREATE TABLE abonnement (
     date_debut_abonnement DATE,
     date_fin_abonnement DATE,
     type_abonnement genre_abonnement,
-    tarif_mensuel_abonnement FLOAT,
-    -- CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
+    tarif_mensuel_abonnement FLOAT
 );
+-- CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
 
 -- ============================================================
 --   Table : Posséder AU                                            
