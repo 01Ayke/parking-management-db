@@ -1,0 +1,21 @@
+#!/bin/bash 
+
+MAIN_FILE="rapport.tex"
+BASE_NAME="${MAIN_FILE%.tex}"
+
+rm -f ${BASE_NAME}.aux\
+      ${BASE_NAME}.log\
+      ${BASE_NAME}.out\
+      ${BASE_NAME}.toc
+
+rm -f ${BASE_NAME}.pdf
+
+pdflatex -interaction=nonstopmode "$MAIN_FILE"
+pdflatex -interaction=nonstopmode "$MAIN_FILE"
+
+
+if [ -f "${BASE_NAME}.pdf" ]; then 
+    evince "${BASE_NAME}.pdf" 2>/dev/null &
+else
+    echo "failed to open"
+fi
