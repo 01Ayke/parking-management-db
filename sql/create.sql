@@ -58,6 +58,7 @@ CREATE TABLE vehicule (
     id_vehicule SERIAL PRIMARY KEY,
     num_immatriculation VARCHAR(255), 
     marque_vehicule VARCHAR(255),
+    genre_vehicule genre_type,
     date_de_fabrication DATE,
     etat_vehicule VARCHAR(255),
     kilometrage INTEGER,

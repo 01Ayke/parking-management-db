@@ -80,17 +80,17 @@ INSERT INTO utilisateur (id_utilisateur, p_identite) VALUES
 -- ============================================================
 --   INSERT DATA FOR VEHICULE TABLE
 -- ============================================================
-INSERT INTO vehicule (id_vehicule, num_immatriculation, marque_vehicule, date_de_fabrication, etat_vehicule, kilometrage, id_utilisateur) VALUES
-(1, 'AB-123-CD', 'Renault', '2020-05-15', 'Bon', 25000, 1),
-(2, 'EF-456-GH', 'Peugeot', '2019-03-20', 'Bon', 35000, 2),
-(3, 'IJ-789-KL', 'BMW', '2021-01-10', 'Excellent', 12000, 3),
-(4, 'MN-012-OP', 'Toyota', '2018-07-30', 'Moyen', 55000, 4),
-(5, 'QR-345-ST', 'Tesla', '2022-02-15', 'Excellent', 8000, 5),
-(6, 'UV-678-WX', 'Yamaha', '2020-09-25', 'Bon', 15000, 6),
-(7, 'YZ-901-AB', 'Mercedes', '2019-11-12', 'Bon', 28000, 7),
-(8, 'CD-234-EF', 'Volkswagen', '2017-06-18', 'Moyen', 72000, 8),
-(9, 'GH-567-IJ', 'Ducati', '2021-08-05', 'Excellent', 9000, 9),
-(10, 'KL-890-MN', 'Ford', '2018-12-22', 'Bon', 48000, 10);
+INSERT INTO vehicule (id_vehicule, num_immatriculation, marque_vehicule,genre_vehicule, date_de_fabrication, etat_vehicule, kilometrage, id_utilisateur) VALUES
+(1, 'AB-123-CD', 'Renault','Voiture', '2020-05-15', 'Bon', 25000, 1),
+(2, 'EF-456-GH', 'Peugeot','Voiture', '2019-03-20', 'Bon', 35000, 2),
+(3, 'IJ-789-KL', 'BMW','Moto', '2021-01-10', 'Excellent', 12000, 3),
+(4, 'MN-012-OP', 'Toyota','Voiture', '2018-07-30', 'Moyen', 55000, 4),
+(5, 'QR-345-ST', 'Tesla','Electrique', '2022-02-15', 'Excellent', 8000, 5),
+(6, 'UV-678-WX', 'Yamaha','Moto', '2020-09-25', 'Bon', 15000, 6),
+(7, 'YZ-901-AB', 'Mercedes','Voiture', '2019-11-12', 'Bon', 28000, 7),
+(8, 'CD-234-EF', 'Volkswagen','Voiture', '2017-06-18', 'Moyen', 72000, 8),
+(9, 'GH-567-IJ', 'Ducati','Moto', '2021-08-05', 'Excellent', 9000, 9),
+(10, 'KL-890-MN', 'Ford','Voiture', '2018-12-22', 'Bon', 48000, 10);
 
 -- ============================================================
 --   INSERT DATA FOR ABONNEMENT TABLE
