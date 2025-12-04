@@ -21,6 +21,16 @@ CREATE TABLE parking (
 );
 
 -- ============================================================
+--   Table : Catégorie place                                            
+-- ============================================================
+CREATE TYPE genre_type AS ENUM ('Voiture', 'Moto', 'Electrique', 'Van');
+
+CREATE TABLE categorie_place (
+    id_categorie_place SERIAL PRIMARY KEY,
+    type_place genre_type
+);
+
+-- ============================================================
 --   Table : Place                                            
 -- ============================================================
 CREATE TABLE place (
@@ -31,6 +41,14 @@ CREATE TABLE place (
     id_categorie_place INTEGER NOT NULL,
     CONSTRAINT fk_place_parking FOREIGN KEY(id_parking) REFERENCES parking(id_parking),
     CONSTRAINT fk_place_categorie_place FOREIGN KEY(id_categorie_place) REFERENCES categorie_place(id_categorie_place)
+);
+
+-- ============================================================
+--   Table : Utilisateur                                            
+-- ============================================================
+CREATE TABLE utilisateur (
+    id_utilisateur SERIAL PRIMARY KEY,
+    p_identite VARCHAR(255)
 );
 
 -- ============================================================
@@ -45,6 +63,20 @@ CREATE TABLE vehicule (
     kilometrage INTEGER,
     id_utilisateur INTEGER NOT NULL,
     CONSTRAINT fk_vehicule_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+);
+
+-- ============================================================
+--   Table : Abonnement                                            
+-- ============================================================
+CREATE TYPE genre_abonnement AS ENUM ('AU','AV');
+
+CREATE TABLE abonnement (
+    id_abonnement SERIAL PRIMARY KEY,
+    date_debut_abonnement DATE,
+    date_fin_abonnement DATE,
+    type_abonnement genre_abonnement,
+    tarif_mensuel_abonnement FLOAT,
+    -- CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
 );
 
 -- ============================================================
@@ -98,14 +130,6 @@ CREATE TABLE tarif (
 );
 
 -- ============================================================
---   Table : Utilisateur                                            
--- ============================================================
-CREATE TABLE utilisateur (
-    id_utilisateur SERIAL PRIMARY KEY,
-    p_identite VARCHAR(255)
-);
-
--- ============================================================
 --   Table : Compte                                            
 -- ============================================================
 CREATE TABLE compte (
@@ -118,16 +142,6 @@ CREATE TABLE compte (
 );
 
 -- ============================================================
---   Table : Catégorie place                                            
--- ============================================================
-CREATE TYPE genre_type AS ENUM ('Voiture', 'Moto', 'Electrique', 'Van');
-
-CREATE TABLE categorie_place (
-    id_categorie_place SERIAL PRIMARY KEY,
-    type_place genre_type
-);
-
--- ============================================================
 --   Table : Appliquer                                            
 -- ============================================================
 CREATE TABLE appliquer (
@@ -135,20 +149,6 @@ CREATE TABLE appliquer (
     id_categorie_place INTEGER REFERENCES categorie_place(id_categorie_place),
     id_tarif INTEGER REFERENCES tarif(id_tarif),
     PRIMARY KEY (id_parking, id_categorie_place)
-);
-
--- ============================================================
---   Table : Abonnement                                            
--- ============================================================
-CREATE TYPE genre_abonnement AS ENUM ('AU','AV');
-
-CREATE TABLE abonnement (
-    id_abonnement SERIAL PRIMARY KEY,
-    date_debut_abonnement DATE,
-    date_fin_abonnement DATE,
-    type_abonnement genre_abonnement,
-    tarif_mensuel_abonnement FLOAT,
-    -- CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
 );
 
 -- ============================================================
