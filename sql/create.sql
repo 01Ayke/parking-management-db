@@ -29,7 +29,7 @@ CREATE TABLE place (
     etat_place VARCHAR(255),
     id_parking INTEGER NOT NULL,
     id_categorie_place INTEGER NOT NULL,
-    CONSTRAINT fk_place_parking FOREIGN KEY(id_parking) REFERENCES parking(id_parking)
+    CONSTRAINT fk_place_parking FOREIGN KEY(id_parking) REFERENCES parking(id_parking),
     CONSTRAINT fk_place_categorie_place FOREIGN KEY(id_categorie_place) REFERENCES categorie_place(id_categorie_place)
 );
 
@@ -84,7 +84,7 @@ CREATE TABLE stationnement (
     id_utilisateur INTEGER NOT NULL,
     CONSTRAINT fk_stationnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule),
     CONSTRAINT fk_stationnement_place FOREIGN KEY(id_place) REFERENCES place(id_place),
-    CONSTRAINT fk_stationnement_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES place(id_utilisateur)
+    CONSTRAINT fk_stationnement_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur)
 );
 
 -- ============================================================
@@ -148,7 +148,7 @@ CREATE TABLE abonnement (
     date_fin_abonnement DATE,
     type_abonnement genre_abonnement,
     tarif_mensuel_abonnement FLOAT,
-    CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
+    -- CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
 );
 
 -- ============================================================
