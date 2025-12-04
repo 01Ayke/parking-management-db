@@ -2,8 +2,13 @@
 -- ========= Parameters =========
 \set instant_ts '2025-12-04 10:30:00'
 \set date_jour  '2025-12-04'
+\set id_utilisateur '1'
+\set id_vehicule '1'
+\set id_parking '1'
+\set id_tarif '1'
+\set id_place '1'
 
--- ========= 1a) Liste des voitures par parking =========
+-- =========  Liste des voitures par parking =========
 SELECT DISTINCT
     p.id_parking,
     p.nom_parking,
@@ -15,7 +20,7 @@ JOIN parking p ON pl.id_parking = p.id_parking
 JOIN vehicule v ON s.id_vehicule = v.id_vehicule
 ORDER BY p.nom_parking, v.num_immatriculation;
 
--- ========= 1b) Liste des parkings par commune =========
+-- =========  Liste des parkings par commune =========
 SELECT
     c.id_commune,
     c.nom_commune,
@@ -25,7 +30,7 @@ FROM parking p
 JOIN commune c ON p.id_commune = c.id_commune
 ORDER BY c.nom_commune, p.nom_parking;
 
--- ========= 2) Parkings saturés à une date donnée (approx. journalière) =========
+-- =========  Parkings saturés à une date donnée (approx. journalière) =========
 -- Hypothèse "saturation journalière": stationnement intersecte la date :date_jour
 WITH places_par_parking AS (
     SELECT pl.id_parking, COUNT(*) AS nb_places
@@ -52,7 +57,7 @@ GROUP BY p.id_parking, p.nom_parking, p.capacite
 HAVING COUNT(DISTINCT sj.id_stationnement) >= p.capacite
 ORDER BY p.nom_parking;
 
--- ========= 3) Parkings saturés à l’instant :'instant_ts' =========
+-- =========  Parkings saturés à l’instant :'instant_ts' =========
 -- Version "end-of-day" pour NULL heure_fin/date_fin (ongoing = actif jusqu’à 23:59:59 du jour)
 WITH stationnements_intervalles AS (
     SELECT
@@ -86,7 +91,7 @@ LEFT JOIN occupation_parking op ON op.id_parking = p.id_parking
 WHERE op.nb_places_occupees >= p.capacite
 ORDER BY p.nom_parking;
 
--- ========= 4) Places disponibles par parking à :'instant_ts' =========
+-- =========  Places disponibles par parking à :'instant_ts' =========
 WITH stationnements_intervalles AS (
     SELECT
         s.id_stationnement,
@@ -113,7 +118,7 @@ WHERE NOT EXISTS (
 )
 ORDER BY p.nom_parking, pl.num_place;
 
--- ========= 5) Voitures garées dans ≥ 2 parkings le :date_jour =========
+-- =========  Vehicule garées dans ≥ 2 parkings le :date_jour =========
 SELECT
     v.id_vehicule,
     v.num_immatriculation,
@@ -127,3 +132,43 @@ WHERE s.date_debut <= :'date_jour'::date
 GROUP BY v.id_vehicule, v.num_immatriculation
 HAVING COUNT(DISTINCT p.id_parking) >= 2
 ORDER BY v.num_immatriculation;
+
+
+-- =========  Vehicule appartenant a un utilisateur : :id_utilisateur =========
+SELECT * 
+FROM vehicule 
+WHERE id_utilisateur = :id_utilisateur;
+-- =========  Abonnement d'un Utilisateur :id_utilisateur =========
+SELECT ab.* 
+FROM abonnement ab
+JOIN posseder_au pau ON ab.id_abonnement = pau.id_abonnement
+WHERE pau.id_utilisateur = :id_utilisateur;
+-- =========  Compte d'un Utilisateur :id_utilisateur =========
+SELECT * 
+FROM compte 
+WHERE id_utilisateur = :id_utilisateur;
+-- =========  Liste des abonnements d'une Vehicule :id_vehicule =========
+SELECT ab.* 
+FROM abonnement ab
+JOIN posseder_av pav ON ab.id_abonnement = pav.id_abonnement
+WHERE pav.id_vehicule = :id_vehicule;
+
+-- =========  Tarif d'une Place :id_place =========
+SELECT t.*
+FROM place p
+JOIN appliquer a ON p.id_parking = a.id_parking AND p.id_categorie_place = a.id_categorie_place
+JOIN tarif t ON a.id_tarif = t.id_tarif
+WHERE p.id_place = :id_place;
+
+-- =========  liste des abonnements proposés par un Parking :id_parking =========
+SELECT ab.* 
+FROM abonnement ab
+JOIN proposer_auv pauv ON ab.id_abonnement = pauv.id_abonnement
+WHERE pauv.id_parking = :id_parking;
+
+-- =========  liste des créneaux d'un Tarif :id_tarif =========
+SELECT c.* 
+FROM creneau c
+JOIN diviser d ON c.id_creneau = d.id_creneau
+WHERE d.id_tarif = :id_tarif
+ORDER BY c.debut_creneau;

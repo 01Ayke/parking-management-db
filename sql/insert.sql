@@ -110,7 +110,7 @@ INSERT INTO abonnement (id_abonnement, date_debut_abonnement, date_fin_abonnemen
 -- ============================================================
 --   INSERT DATA FOR POSSEDER_AU TABLE
 -- ============================================================
-INSERT INTO posseder_au (id_vehicule, id_abonnement) VALUES
+INSERT INTO posseder_au (id_utilisateur, id_abonnement) VALUES
 (1, 1),
 (3, 2),
 (4, 3),
@@ -121,7 +121,7 @@ INSERT INTO posseder_au (id_vehicule, id_abonnement) VALUES
 -- ============================================================
 --   INSERT DATA FOR POSSEDER_AV TABLE
 -- ============================================================
-INSERT INTO posseder_av (id_utilisateur, id_abonnement) VALUES
+INSERT INTO posseder_av (id_vehicule, id_abonnement) VALUES
 (2, 7),
 (6, 8),
 (9, 9),

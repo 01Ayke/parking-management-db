@@ -81,9 +81,9 @@ CREATE TABLE abonnement (
 -- CONSTRAINT fk_abonnement_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule)
 
 -- ============================================================
---   Table : Posséder AU                                            
+--   Table : Posséder AV                                           
 -- ============================================================
-CREATE TABLE posseder_au (
+CREATE TABLE posseder_av (
     id_vehicule INTEGER NOT NULL,
     id_abonnement INTEGER NOT NULL,
     CONSTRAINT fk_posseder_au_vehicule FOREIGN KEY(id_vehicule) REFERENCES vehicule(id_vehicule),
@@ -92,9 +92,9 @@ CREATE TABLE posseder_au (
 );
 
 -- ============================================================
---   Table : Posséder AV                                        
+--   Table : Posséder AU                                      
 -- ============================================================
-CREATE TABLE posseder_av (
+CREATE TABLE posseder_au (
     id_utilisateur INTEGER NOT NULL,
     id_abonnement INTEGER NOT NULL,
     CONSTRAINT fk_posseder_au_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur),
