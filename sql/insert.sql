@@ -302,6 +302,3 @@ SELECT setval('tarif_id_tarif_seq', (SELECT MAX(id_tarif) FROM tarif));
 SELECT setval('creneau_id_creneau_seq', (SELECT MAX(id_creneau) FROM creneau));
 
 SELECT setval('compte_id_compte_seq', (SELECT MAX(id_compte) FROM compte));
-
--- Note: For tables without serial IDs (posseder_au, posseder_av, diviser, appliquer, proposer_auv)
--- No sequence reset needed as they don't have auto-incrementing IDs

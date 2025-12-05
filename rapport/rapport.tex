@@ -365,9 +365,9 @@ Dans ce projet, plusieurs scripts SQL ont été préparés pour gérer et manipu
     \end{verbatim}
     Cela permet de référencer \texttt{:id} dans les requêtes, ce qui facilite la paramétrisation et les tests avec différentes valeurs sans modifier les requêtes SQL.
     
-    \item \textbf{insert.sql} : Sert à insérer des données initiales dans les tables.
+    \item \textbf{insert.sql} : Sert à insérer des données initiales dans les tables. Pour que les prochaines insertions automatiques ne créent pas de doublons. Nous utilisons \texttt{setval} pour positionner chaque séquence sur la valeur maximale déjà présente
     
-    \item \textbf{update.sql} : Contient les commandes pour modifier des données existantes.
+    \item \textbf{update.sql} : Contient les commandes pour modifier des données existantes. Il utilise \texttt{\textbackslash set} aussi pour définir des paramètres possibles.
     
     \item \textbf{drop.sql} : Sert à supprimer les tables et autres objets, généralement pour réinitialiser le schéma.
 \end{itemize}
