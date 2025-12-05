@@ -218,6 +218,70 @@ FROM durees
 GROUP BY id_parking
 ORDER BY id_parking;
 
+-- =========  Créneaux horaires les plus chers par commune =========
+SELECT 
+    c.nom_commune,
+    cr.debut_creneau,
+    cr.fin_creneau,
+    cr.prix,
+    RANK() OVER (PARTITION BY c.id_commune ORDER BY cr.prix DESC) AS rang_prix
+FROM commune c
+JOIN parking p ON c.id_commune = p.id_commune
+JOIN appliquer ap ON p.id_parking = ap.id_parking
+JOIN tarif t ON ap.id_tarif = t.id_tarif
+JOIN diviser d ON t.id_tarif = d.id_tarif
+JOIN creneau cr ON d.id_creneau = cr.id_creneau
+ORDER BY c.nom_commune, cr.prix DESC;
+
+-- =========  Utilisateurs multi-véhicules et leurs abonnements =========
+SELECT 
+    u.id_utilisateur,
+    u.p_identite,
+    COUNT(DISTINCT v.id_vehicule) AS nb_vehicules,
+    COUNT(DISTINCT CASE WHEN ab_au.type_abonnement = 'AU' THEN pau.id_abonnement END) AS nb_abonnements_utilisateur,
+    COUNT(DISTINCT CASE WHEN ab_av.type_abonnement = 'AV' THEN pav.id_abonnement END) AS nb_abonnements_vehicule
+FROM utilisateur u
+LEFT JOIN vehicule v ON u.id_utilisateur = v.id_utilisateur
+LEFT JOIN posseder_au pau ON u.id_utilisateur = pau.id_utilisateur
+LEFT JOIN abonnement ab_au ON pau.id_abonnement = ab_au.id_abonnement
+LEFT JOIN posseder_av pav ON v.id_vehicule = pav.id_vehicule
+LEFT JOIN abonnement ab_av ON pav.id_abonnement = ab_av.id_abonnement
+GROUP BY u.id_utilisateur, u.p_identite
+HAVING COUNT(DISTINCT v.id_vehicule) > 1
+ORDER BY nb_vehicules DESC;
+
+-- =========  Historique des stationnements d'un utilisateur avec coût =========
+SELECT 
+    s.id_stationnement,
+    s.date_debut,
+    s.heure_debut,
+    s.date_fin,
+    s.heure_fin,
+    p.nom_parking,
+    v.num_immatriculation,
+    cp.type_place,
+    s.mode_paiement,
+    COALESCE(SUM(cr.prix), 0) AS cout_total
+FROM stationnement s
+JOIN utilisateur u ON s.id_utilisateur = u.id_utilisateur
+JOIN vehicule v ON s.id_vehicule = v.id_vehicule
+JOIN place pl ON s.id_place = pl.id_place
+JOIN parking p ON pl.id_parking = p.id_parking
+JOIN categorie_place cp ON pl.id_categorie_place = cp.id_categorie_place
+LEFT JOIN appliquer ap ON p.id_parking = ap.id_parking AND cp.id_categorie_place = ap.id_categorie_place
+LEFT JOIN tarif t ON ap.id_tarif = t.id_tarif
+LEFT JOIN diviser d ON t.id_tarif = d.id_tarif
+LEFT JOIN creneau cr ON d.id_creneau = cr.id_creneau
+    AND (
+        (s.heure_debut::time BETWEEN cr.debut_creneau AND cr.fin_creneau)
+        OR (s.heure_fin::time BETWEEN cr.debut_creneau AND cr.fin_creneau)
+        OR (cr.debut_creneau BETWEEN s.heure_debut::time AND s.heure_fin::time)
+    )
+WHERE u.id_utilisateur = :id_utilisateur
+GROUP BY s.id_stationnement, s.date_debut, s.heure_debut, s.date_fin, s.heure_fin, 
+         p.nom_parking, v.num_immatriculation, cp.type_place, s.mode_paiement
+ORDER BY s.date_debut DESC, s.heure_debut DESC;
+
 -- =========  Statistiques : Coût moyen du stationnement par véhicule par mois =========
 -- Hypothèse : prix = tarif du creneau associé au tarif appliqué à la place
 WITH stationnements_creneaux AS (
@@ -306,3 +370,49 @@ SELECT
     nb_stationnements
 FROM stationnements_semaine
 ORDER BY semaine, nb_stationnements DESC;
+
+-- =========  Revenus générés par type d'abonnement =========
+SELECT 
+    ab.type_abonnement,
+    COUNT(DISTINCT 
+        CASE 
+            WHEN ab.type_abonnement = 'AU' THEN pau.id_utilisateur 
+            ELSE pav.id_vehicule 
+        END
+    ) AS nb_abonnes,
+    SUM(ab.tarif_mensuel_abonnement) AS revenu_mensuel_total
+FROM abonnement ab
+LEFT JOIN posseder_au pau ON ab.id_abonnement = pau.id_abonnement
+LEFT JOIN posseder_av pav ON ab.id_abonnement = pav.id_abonnement
+WHERE CURRENT_DATE BETWEEN ab.date_debut_abonnement AND ab.date_fin_abonnement
+GROUP BY ab.type_abonnement;
+
+-- =========  Utilisation des parkings par genre de véhicule =========
+SELECT 
+    p.nom_parking,
+    v.genre_vehicule,
+    COUNT(s.id_stationnement) AS nb_stationnements,
+    ROUND(COUNT(s.id_stationnement) * 100.0 / SUM(COUNT(s.id_stationnement)) OVER (PARTITION BY p.id_parking), 2) AS pourcentage
+FROM stationnement s
+JOIN vehicule v ON s.id_vehicule = v.id_vehicule
+JOIN place pl ON s.id_place = pl.id_place
+JOIN parking p ON pl.id_parking = p.id_parking
+GROUP BY p.id_parking, p.nom_parking, v.genre_vehicule
+ORDER BY p.nom_parking, nb_stationnements DESC;
+
+-- =========  Tarif moyen par parking et catégorie =========
+SELECT 
+    p.nom_parking,
+    cp.type_place,
+    ROUND(AVG(c.prix), 2) AS tarif_horaire_moyen,
+    MIN(c.prix) AS tarif_min,
+    MAX(c.prix) AS tarif_max
+FROM parking p
+JOIN appliquer a ON p.id_parking = a.id_parking
+JOIN categorie_place cp ON a.id_categorie_place = cp.id_categorie_place
+JOIN tarif t ON a.id_tarif = t.id_tarif
+JOIN diviser d ON t.id_tarif = d.id_tarif
+JOIN creneau c ON d.id_creneau = c.id_creneau
+GROUP BY p.id_parking, p.nom_parking, cp.id_categorie_place, cp.type_place
+ORDER BY p.nom_parking, cp.type_place;
+
