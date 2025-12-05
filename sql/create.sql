@@ -64,7 +64,7 @@ CREATE TABLE vehicule (
     date_de_fabrication DATE CHECK (date_de_fabrication <= CURRENT_DATE),
     etat_vehicule VARCHAR(255) CHECK (etat_vehicule IN ('Excellent', 'Bon', 'Moyen', 'Mauvais')),
     kilometrage INTEGER CHECK (kilometrage >= 0),
-    id_utilisateur INTEGER NOT NULL,
+    id_utilisateur INTEGER,
     CONSTRAINT fk_vehicule_utilisateur FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur)
 );
 
