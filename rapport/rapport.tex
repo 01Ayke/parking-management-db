@@ -85,16 +85,12 @@ Le projet vise à :
     \item permettre l'évolution du schéma pour des besoins futurs.
 \end{itemize}
 
-\chapter{Modèle conceptuel initial}
+\chapter{Modèle initial}
 
-Le premier modèle conceptuel de données (MCD) proposé est présenté ci-dessous. 
-Il constitue une première base de réflexion sur les entités importantes du système 
+Le premier modèle constitue une première base de réflexion sur les entités importantes du système 
 de gestion des parkings du campus.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=14cm]{modele-concep-init.png}
-    \caption{\hyperref[fig:model-init]{Modèle Conceptuel Initial du système }}
-\end{figure}
+
+\section{Schèma conceptuel initial}
 
 Ce modèle identifie cinq entités principales :
 \begin{itemize}
@@ -113,6 +109,13 @@ Des associations structurent ces entités :
     \item \textbf{Être fait dans} : un stationnement se déroule sur une place.
     \item \textbf{Appliquer} : un tarif est appliqué à un parking (relation floue dans ce modèle initial).
 \end{itemize}
+
+La figure ci-dessous représente le schèma conceptuel initial proposé.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm]{modele-concep-init.png}
+    \caption{\hyperref[fig:model-init]{Modèle Conceptuel Initial du système }}
+\end{figure}
 
 \section{Limites du modèle initial}
 
@@ -348,6 +351,29 @@ L’information permettant de savoir si la personne qui se gare est ou non propr
 \noindent Cette séparation améliore à la fois la précision et le niveau de couverture du modèle, et permet d’exploiter distinctement la responsabilité légale, l’usage réel du véhicule, ainsi qu’un historique plus riche des stationnements, aussi bien pour les différents conducteurs que pour les propriétaires éventuels.
 
 
+\chapter{Présentation des fichiers SQL}
+
+Dans ce projet, plusieurs scripts SQL ont été préparés pour gérer et manipuler la base de données :
+
+\begin{itemize}
+    \item \textbf{create.sql} : Ce fichier définit le schéma de la base de données en créant les tables, en spécifiant les types de colonnes et en définissant des contraintes. En particulier, la contrainte \texttt{NOT NULL} est utilisée pour exprimer une cardinalité minimale de 1, garantissant que certaines colonnes doivent toujours contenir une valeur. Ainsi que la contrainte \texttt{UNIQUE} permettant une unique entrée par table. Cela est essentiel pour maintenir l'intégrité des données et modéliser les relations obligatoires dans la base.
+    
+    \item \textbf{select.sql} : Ce fichier contient des requêtes pour interroger la base de données. Pour rendre les requêtes plus dynamiques, on peut utiliser des variables avec \texttt{\textbackslash set} dans l'environnement SQL. Par exemple :
+    \begin{verbatim}
+    \set id 1
+    SELECT * FROM nom_table WHERE id = :id;
+    \end{verbatim}
+    Cela permet de référencer \texttt{:id} dans les requêtes, ce qui facilite la paramétrisation et les tests avec différentes valeurs sans modifier les requêtes SQL.
+    
+    \item \textbf{insert.sql} : Sert à insérer des données initiales dans les tables.
+    
+    \item \textbf{update.sql} : Contient les commandes pour modifier des données existantes.
+    
+    \item \textbf{drop.sql} : Sert à supprimer les tables et autres objets, généralement pour réinitialiser le schéma.
+\end{itemize}
+
+Globalement, les fichiers \texttt{create.sql} et \texttt{select.sql} constituent le cœur du workflow : le premier définit la structure avec des contraintes comme \texttt{NOT NULL} pour les données obligatoires, tandis que le second montre la flexibilité des requêtes grâce à l'utilisation de variables.
+
 
 
 
@@ -478,12 +504,14 @@ Le code de l’application est déployé sur Render, une plateforme cloud pour h
 \chapter{Conclusion}
 Ce chapitre sera complété après l'implémentation, l'évaluation et les tests.
 
+\newpage
+\chapter{Annexe}
 \label{fig:model-init}
-\begin{sidewaysfigure}
+\begin{figure}[H]
     \centering
     % Fill the (rotated) page; tweak the factor if you want slight bleed
     \includegraphics[width=0.8\textheight]{modele-concep-init.png}
-\end{sidewaysfigure}
+\end{figure}
 
 \clearpage 
 
