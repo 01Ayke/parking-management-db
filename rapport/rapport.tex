@@ -1,0 +1,260 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\makeatletter
+\def\chapter{\@startsection {chapter}{0}{\z@}
+                                   {-3.5ex \@plus -1ex \@minus -.2ex}
+                                   {2.3ex \@plus.2ex}
+                                   {\normalfont\huge\bfseries}}
+\makeatother
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\Huge\bfseries Projet SGBD : Gestion des Parkings du Campus \par}
+    \vspace{1cm}
+    {\Large 2\textsuperscript{e} année Informatique \par}
+    \vfill
+
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.5\linewidth]{logo_em.jpg}
+        \label{fig:placeholder}
+    \end{figure}
+
+    \begin{flushleft}
+{\large \textbf{Encadrant :}} \\
+\vspace{0.2cm}
+{\Large Nom de l'encadrant : \textit{LOMBARDY} Sylvain} \\ 
+{\Large Nom de l'encadrant : \textit{MOSABAH} Mohamed} \\ 
+\end{flushleft}
+
+\vspace{1.5cm}
+
+\begin{flushright}
+{\large \textbf{Réalisé par :}} \\
+\vspace{0.3cm}
+{\Large
+\begin{tabular}{l}
+• \textit{} \\ 
+• \textit{} \\ 
+• \textit{} \\  
+• \textit{}\\  
+\end{tabular}
+}
+\end{flushright}
+
+\vfill
+{\large \today}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\chapter{Introduction}
+
+\section{Contexte du projet}
+Ce projet s'inscrit dans le cadre du module \textbf{Systèmes de Gestion de Bases de Données (SGBD)}. 
+Il consiste à concevoir et implémenter une base de données relationnelle permettant de gérer 
+les parkings du campus universitaire. 
+
+La base doit offrir des fonctionnalités de gestion des parkings, des places, des utilisateurs, 
+des véhicules, des abonnements et des stationnements, tout en permettant des consultations, 
+statistiques et opérations de mise à jour.
+
+\section{Objectifs du projet}
+Le projet vise à :
+\begin{itemize}
+    \item modéliser les données via un MCD puis un MLD ;
+    \item créer la base relationnelle sous PostgreSQL ;
+    \item garantir l'intégrité et la cohérence des informations ;
+    \item fournir des requêtes de consultation et de statistiques pertinentes ;
+    \item permettre l'évolution du schéma pour des besoins futurs.
+\end{itemize}
+
+\section{Hypothèses}
+Afin de lever certaines ambiguïtés, nous posons les hypothèses suivantes :
+\begin{itemize}
+    \item un parking appartient à une seule commune ;
+    \item une place appartient à un seul parking et à une seule catégorie ;
+    \item un tarif correspond à un intervalle de temps, mais peut être appliqué à plusieurs parkings et catégories ;
+    \item un utilisateur peut avoir plusieurs véhicules et plusieurs abonnements ;
+    \item un stationnement est associé à un véhicule, une place et éventuellement un utilisateur ;
+    \item des tables d'association gèrent les relations plusieurs-à-plusieurs (abonnements/véhicules et abonnements/utilisateurs).
+\end{itemize}
+\chapter{Modélisation Conceptuelle}
+
+\section{Modèle Conceptuel Initial}
+
+Le premier modèle conceptuel de données (MCD) proposé est présenté ci-dessous. 
+Il constitue une première base de réflexion sur les entités importantes du système 
+de gestion des parkings du campus.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=14cm]{modele-concep-init.png}
+    \caption{Modèle Conceptuel Initial du système}
+\end{figure}
+
+Ce modèle identifie cinq entités principales :
+\begin{itemize}
+    \item \textbf{Commune} : contient les informations de localisation (id, nom, code postal).
+    \item \textbf{Parking} : décrit les parkings (id, nom, type, capacité, adresse), chacun étant situé dans une seule commune.
+    \item \textbf{Place} : représente les places de stationnement d’un parking.
+    \item \textbf{Véhicule} : décrit les véhicules (immatriculation, marque, état, kilométrage…).
+    \item \textbf{Tarif} : correspond à un tarif appliqué à un parking ou à une place.
+    \item \textbf{Stationnement} : représente les événements de stationnement d’un véhicule.
+\end{itemize}
+
+Des associations structurent ces entités :
+\begin{itemize}
+    \item \textbf{Contenir} : une commune contient plusieurs parkings.
+    \item \textbf{Posséder} : un véhicule peut apparaître dans plusieurs stationnements.
+    \item \textbf{Être fait dans} : un stationnement se déroule sur une place.
+    \item \textbf{Appliquer} : un tarif est appliqué à un parking (relation floue dans ce modèle initial).
+\end{itemize}
+
+\section{Limites du Modèle Initial}
+
+Bien que fonctionnel pour une première approche, ce modèle présente plusieurs limites :
+
+\subsection*{1. Absence d'entités essentielles}
+Le modèle initial ne prend pas en compte :
+\begin{itemize}
+    \item les \textbf{utilisateurs} (propriétaires de véhicules, clients du parking),
+    \item les \textbf{comptes utilisateurs} (identifiant, mot de passe),
+    \item les \textbf{abonnements}, pourtant très importants dans un système de gestion de parkings,
+    \item les \textbf{catégories de places} (standard, PMR, électrique…).
+\end{itemize}
+
+\subsection*{2. Relations imprécises ou insuffisantes}
+\begin{itemize}
+    \item La relation \textbf{Appliquer} ne précise pas à quoi le tarif s’applique (parking seul ? place ? catégorie ?).
+    \item La date du tarif est insuffisante : un tarif doit définir au minimum une \textbf{plage horaire} (heure début / heure fin).
+    \item Le lien entre place et véhicule n’est pas direct : il transite seulement via stationnement, ce qui peut être correct mais doit être clarifié.
+\end{itemize}
+
+\subsection*{3. Attributs manquants}
+\begin{itemize}
+    \item absence d’attributs essentiels pour les utilisateurs ;
+    \item manque de gestion du paiement ou du mode de paiement ;
+    \item pas de gestion des \textbf{capacités réelles} ou des états de place (\textit{libre, occupée, réservée}).
+\end{itemize}
+
+\subsection*{4. Problèmes d’évolution du système}
+Le modèle initial permet difficilement :
+\begin{itemize}
+    \item d'ajouter de nouveaux types de places ;
+    \item de gérer plusieurs tarifs dans un même parking selon la catégorie ;
+    \item de gérer plusieurs abonnements pour un même utilisateur.
+\end{itemize}
+
+\section{Modèle Conceptuel Amélioré}
+
+À partir de ces limites, un modèle conceptuel amélioré a été construit. Ce modèle corrige 
+les problèmes identifiés et enrichit le système pour répondre complètement aux besoins du projet.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=15cm]{version-ameliore.png}
+    \caption{Modèle Conceptuel Amélioré du système}
+\end{figure}
+
+Le modèle final intègre les nouvelles entités et relations suivantes :
+
+Ainsi, le modèle final constitue une base robuste et normalisée pour la création de la base de données relationnelle.
+\chapter{Modèle Relationnel}
+
+\section{Notations}
+Dans ce qui suit, nous utiliserons les conventions suivantes :
+\begin{itemize}
+    \item les \textbf{clés primaires} sont \underline{soulignées} ;
+    \item les \textbf{clés étrangères} sont précédées du symbole \#.
+\end{itemize}
+
+\section{Modèle Relationnel Initial}
+
+À partir du modèle conceptuel initial, on obtient le modèle relationnel suivant.
+
+\subsection*{Relations du modèle initial}
+
+\begin{itemize}
+    \item \textbf{COMMUNE}(\underline{id\_commune}, code\_postal, nom)
+    
+    \item \textbf{PARKING}(\underline{id\_parking}, nom, type, adresse, capacite, \#id\_commune)
+    
+    \item \textbf{PLACE}(\underline{id\_place}, etat\_place, \#id\_parking)
+    
+    \item \textbf{VEHICULE}(\underline{id\_vehicule}, num\_immatriculation, marque, date\_de\_fabrication, etat, kilometrage)
+    
+    \item \textbf{TARIF}(\underline{id\_tarif}, prix, date)
+    
+    \item \textbf{STATIONNEMENT}(\underline{id\_stationnement}, date, heure\_debut, heure\_fin, \#id\_vehicule, \#id\_place, \#id\_tarif)
+\end{itemize}
+
+Ce premier modèle relationnel reprend les entités principales (commune, parking, place, véhicule, tarif, stationnement), mais reste limité pour exprimer certains besoins avancés (utilisateurs, abonnements, catégories de places, tarification détaillée, etc.).
+
+\section{Modèle Relationnel Amélioré}
+
+À partir du modèle conceptuel amélioré, le modèle relationnel a été enrichi pour mieux couvrir les besoins fonctionnels du système.
+
+\subsection*{Relations du modèle amélioré}
+
+\begin{itemize}
+    \item \textbf{COMMUNE}(\underline{id\_commune}, code\_postal, nom\_commune)
+    
+    \item \textbf{PARKING}(\underline{id\_parking}, nom\_parking, type\_parking, adresse, capacite, \#id\_commune)
+    
+    \item \textbf{CATEGORIE\_PLACE}(\underline{id\_categorie\_place}, type\_place)
+    
+    \item \textbf{PLACE}(\underline{id\_place}, num\_place, etat\_place, \#id\_parking, \#id\_categorie\_place)
+    
+    \item \textbf{TARIF}(\underline{id\_tarif}, prix, heure\_debut, heure\_fin)
+    
+    \item \textbf{APPLIQUER}(\underline{\#id\_parking}, \underline{\#id\_categorie\_place}, \underline{\#id\_tarif})
+    \begin{itemize}
+        \item clé primaire composée : (\#id\_parking, \#id\_categorie\_place, \#id\_tarif)
+    \end{itemize}
+    
+    \item \textbf{UTILISATEUR}(\underline{id\_utilisateur}, piece\_identite)
+    
+    \item \textbf{COMPTE}(\underline{id\_compte}, identifiant, mot\_de\_passe, date\_creation, \#id\_utilisateur)
+    
+    \item \textbf{VEHICULE}(\underline{id\_vehicule}, num\_immatriculation, marque\_vehicule, date\_de\_fabrication,
+    etat\_vehicule, kilometrage, \#id\_utilisateur)
+    
+    \item \textbf{ABONNEMENT}(\underline{id\_abonnement}, date\_debut\_abonnement, date\_fin\_abonnement,
+    type\_abonnement, tarif\_mensuel\_abonnement)
+    
+    \item \textbf{POSSEDER\_AU}(\underline{\#id\_vehicule}, \underline{\#id\_abonnement})
+    \begin{itemize}
+        \item clé primaire composée : (\#id\_vehicule, \#id\_abonnement)
+    \end{itemize}
+    
+    \item \textbf{POSSEDER\_AV}(\underline{\#id\_utilisateur}, \underline{\#id\_abonnement})
+    \begin{itemize}
+        \item clé primaire composée : (\#id\_utilisateur, \#id\_abonnement)
+    \end{itemize}
+    
+    \item \textbf{STATIONNEMENT}(\underline{id\_stationnement}, date\_debut, date\_fin, heure\_debut, heure\_fin,
+    mode\_paiement, \#id\_vehicule, \#id\_place, \#id\_utilisateur)
+\end{itemize}
+
+\subsection*{Commentaires sur l'évolution du modèle}
+
+Le modèle relationnel amélioré introduit plusieurs éléments absents de la version initiale :
+\chapter{Conclusion}
+Ce chapitre sera complété après l'implémentation, l'évaluation et les tests.
+
+\end{document}
