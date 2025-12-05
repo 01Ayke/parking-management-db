@@ -274,3 +274,34 @@ INSERT INTO proposer_auv (id_abonnement, id_parking) VALUES
 (8, 8),
 (9, 9),
 (10, 10);
+
+
+-- ============================================================
+--   RESET SEQUENCES AFTER INSERTING DATA
+-- ============================================================
+-- Reset all serial sequences to start after the last inserted ID
+
+SELECT setval('commune_id_commune_seq', (SELECT MAX(id_commune) FROM commune));
+
+SELECT setval('parking_id_parking_seq', (SELECT MAX(id_parking) FROM parking));
+
+SELECT setval('categorie_place_id_categorie_place_seq', (SELECT MAX(id_categorie_place) FROM categorie_place));
+
+SELECT setval('place_id_place_seq', (SELECT MAX(id_place) FROM place));
+
+SELECT setval('utilisateur_id_utilisateur_seq', (SELECT MAX(id_utilisateur) FROM utilisateur));
+
+SELECT setval('vehicule_id_vehicule_seq', (SELECT MAX(id_vehicule) FROM vehicule));
+
+SELECT setval('abonnement_id_abonnement_seq', (SELECT MAX(id_abonnement) FROM abonnement));
+
+SELECT setval('stationnement_id_stationnement_seq', (SELECT MAX(id_stationnement) FROM stationnement));
+
+SELECT setval('tarif_id_tarif_seq', (SELECT MAX(id_tarif) FROM tarif));
+
+SELECT setval('creneau_id_creneau_seq', (SELECT MAX(id_creneau) FROM creneau));
+
+SELECT setval('compte_id_compte_seq', (SELECT MAX(id_compte) FROM compte));
+
+-- Note: For tables without serial IDs (posseder_au, posseder_av, diviser, appliquer, proposer_auv)
+-- No sequence reset needed as they don't have auto-incrementing IDs
