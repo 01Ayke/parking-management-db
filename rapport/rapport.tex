@@ -240,7 +240,7 @@ Le modèle relationnel amélioré introduit plusieurs éléments absents de la v
 La suppression de la ternaire au profit de deux binaires clarifie la sémantique et facilite l’implémentation. L’unicité du tarif par couple (parking, catégorie) garantit la cohérence, tandis que les créneaux portent les variations temporelles. La séparation Utilisateur/Compte et le double portage des abonnements (U et V) offrent la souplesse nécessaire aux cas d’usage réels.
 ```
 
-\section{Évolutions du schéma entité–association : justification des choix}
+\chapter{Évolutions du schéma entité–association : justification des choix}
 \label{sec:evolutions-ee}
 
 Cette section synthétise les changements apportés au modèle et les raisons conceptuelles et métiers qui les motivent : clarification des cardinalités, unicité des tarifs par couple (parking, catégorie), tarification par créneaux, distinction entre identité légale et compte web, et abonnements portés soit par l’utilisateur soit par le véhicule.
@@ -294,7 +294,87 @@ Nous distinguons deux abonnements :
   \item \textbf{Abonnement V} (porté par le véhicule) : toute personne entrant avec un véhicule abonné bénéficie de l’abonnement (flotte, véhicule de fonction).
 \end{itemize}
 Ce découplage répond à des stratégies commerciales et des modalités de contrôle différentes (plaque vs identité).
--
+
+
+\chapter{Application}
+\label{sec:application}
+
+Cette section présente la mise en œuvre pratique de l’application : création et gestion de la base PostgreSQL, conception de l’interface utilisateur et fonctionnement du serveur API, ainsi que la mise en ligne finale de l’application complète, afin de la rendre accessible publiquement via l’URL : \url{https://parking-app-521c.onrender.com}.
+
+\section{Base locale et connexion serveur}
+\label{subsec:base-locale}
+
+On décrit ici la création d’une base PostgreSQL locale pour le développement et la configuration du serveur pour se connecter de manière sécurisée via des variables d’environnement.
+
+
+\subsection{Installation et création de la base locale}
+Chaque membre du groupe installe PostgreSQL sur sa machine et crée une base dédiée pour les tests.  
+L’initialisation de la base se fait à l’aide des scripts fournis : \texttt{drop.sql}, \texttt{create.sql} et \texttt{insert.sql}.  
+Ces scripts permettent de créer les tables puis d’insérer un jeu minimal de données de test.
+
+\subsection{Connexion serveur - base locale}
+Pour se connecter à la base depuis le serveur sans exposer les identifiants dans le code, nous utilisons des variables d’environnement stockées dans un fichier \texttt{.env}, propre à chaque machine. Ce fichier est ignoré par Git pour préserver la confidentialité.  
+
+Un exemple de fichier \texttt{.env} est présenté ci-dessous :
+
+\begin{verbatim}
+PGHOST=localhost
+PGUSER=postgres
+PGPASSWORD=motdepasse
+PGDATABASE=parking_local
+PGPORT=5432
+\end{verbatim}
+
+Le serveur utilise ces variables pour établir la connexion avec PostgreSQL via le pool de connexions :
+
+
+\begin{verbatim}
+const pool = new Pool({
+    user: process.env.PGUSER,
+    host: process.env.PGHOST,
+    database: process.env.PGDATABASE,
+    password: process.env.PGPASSWORD,
+    port: process.env.PGPORT,
+});
+\end{verbatim}
+
+Cette approche permet de sécuriser les informations sensibles et de faciliter la configuration de chaque environnement de développement.
+\section{Interface}
+\label{subsec:interface}
+
+L’interface permet aux utilisateurs d’accéder aux fonctionnalités de l’application et de visualiser les informations principales de manière claire.
+
+s
+\subsection{Présentation de la page}
+\label{subsubsec:presentation-page}
+
+L’interface web permet aux utilisateurs de s’authentifier puis d’accéder à un tableau de bord regroupant les fonctionnalités principales de l’application.  
+Elle offre une vue générale des parkings, des véhicules, des places disponibles ...  \\
+L’utilisateur peut sélectionner des requêtes à exécuter via des boutons et saisir certains paramètres (ID véhicule, parking ou place...) pour filtrer les résultats.  
+
+
+\subsection{Serveur API et gestion des requêtes}
+\label{subsubsec:server-api}
+
+Le serveur API gère toutes les requêtes provenant de l’interface. Chaque action de l’utilisateur déclenche un appel au serveur, qui exécute les requêtes SQL sur la base de données et renvoie les résultats à l’interface.
+
+\section{Hébergement en ligne}
+\label{subsec:hebergement}
+
+L’application est entièrement déployée en ligne pour permettre une consultation publique.
+
+\subsection{Base de données publique}
+\label{subsubsec:railway}
+
+Pour disposer d’une base accessible en ligne, nous utilisons Railway, une plateforme cloud pour héberger des applications. Railway fournit une instance PostgreSQL managée et une chaîne de connexion \texttt{DATABASE\_URL} prête à l’emploi. La base est initialisée à l’aide des scripts \texttt{create.sql} et \texttt{insert.sql}, qui sont importés directement via l’interface Railway ou avec \texttt{psql}.
+
+\subsection{Déploiement en ligne du serveur}
+\label{subsubsec:render}
+
+Le code de l’application est déployé sur Render, une plateforme cloud pour héberger des applications web. Les variables d’environnement sont définies directement dans le tableau de bord Render, sans fichier \texttt{.env}, en utilisant la valeur fournie par Railway (\ref{subsubsec:railway}). Render construit et exécute automatiquement le serveur API, fournit une URL publique, et reconstruit l’application à chaque mise à jour du dépôt Git, assurant un accès permanent via un lien unique.
+
+
+
 \chapter{Conclusion}
 Ce chapitre sera complété après l'implémentation, l'évaluation et les tests.
 
