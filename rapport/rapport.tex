@@ -1,4 +1,5 @@
 \documentclass[a4paper,12pt]{report}
+\usepackage{rotating}   
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -92,7 +93,7 @@ de gestion des parkings du campus.
 \begin{figure}[H]
     \centering
     \includegraphics[width=14cm]{modele-concep-init.png}
-    \caption{Modèle Conceptuel Initial du système}
+    \caption{\hyperref[fig:model-init]{Modèle Conceptuel Initial du système }}
 \end{figure}
 
 Ce modèle identifie cinq entités principales :
@@ -166,7 +167,8 @@ La figure ci-dessous représente le schèma conceptuel du modèle amélioré en 
     \centering
     \hspace*{-0.8cm}
     \includegraphics[width=18cm]{version-ameliore.png}
-    \caption{Modèle Conceptuel Amélioré du système}
+    \caption{\hyperref[fig:model-ameliore]{Modèle Conceptuel Amélioré du système}}
+    
 \end{figure}
 
 \section{Schèma relationnel du modèle}
@@ -476,5 +478,22 @@ Le code de l’application est déployé sur Render, une plateforme cloud pour h
 
 \chapter{Conclusion}
 Ce chapitre sera complété après l'implémentation, l'évaluation et les tests.
+
+\label{fig:model-init}
+\begin{sidewaysfigure}
+    \centering
+    % Fill the (rotated) page; tweak the factor if you want slight bleed
+    \includegraphics[width=0.8\textheight]{modele-concep-init.png}
+\end{sidewaysfigure}
+
+\clearpage 
+
+\label{fig:model-ameliore}
+\begin{sidewaysfigure}
+    \centering
+    % Fill the (rotated) page; tweak the factor if you want slight bleed
+    \includegraphics[width=1.1\textheight]{version-ameliore.png}
+\end{sidewaysfigure}
+
 
 \end{document}
