@@ -48,10 +48,10 @@
 \vspace{0.3cm}
 {\Large
 \begin{tabular}{l}
-• \textit{} \\ 
-• \textit{} \\ 
-• \textit{} \\  
-• \textit{}\\  
+• \textit{Anas QUATRA} \\ 
+• \textit{Soufiane SBAI} \\ 
+• \textit{Aymane KECHNA} \\  
+• \textit{Mohamed Aziz MIGAOU}\\  
 \end{tabular}
 }
 \end{flushright}
@@ -254,6 +254,68 @@ Ce premier modèle relationnel reprend les entités principales (commune, parkin
 \subsection*{Commentaires sur l'évolution du modèle}
 
 Le modèle relationnel amélioré introduit plusieurs éléments absents de la version initiale :
+
+```latex
+
+\paragraph{Conclusion.}
+La suppression de la ternaire au profit de deux binaires clarifie la sémantique et facilite l’implémentation. L’unicité du tarif par couple (parking, catégorie) garantit la cohérence, tandis que les créneaux portent les variations temporelles. La séparation Utilisateur/Compte et le double portage des abonnements (U et V) offrent la souplesse nécessaire aux cas d’usage réels.
+```
+
+\section{Évolutions du schéma entité–association : justification des choix}
+\label{sec:evolutions-ee}
+
+Cette section synthétise les changements apportés au modèle et les raisons conceptuelles et métiers qui les motivent : clarification des cardinalités, unicité des tarifs par couple (parking, catégorie), tarification par créneaux, distinction entre identité légale et compte web, et abonnements portés soit par l’utilisateur soit par le véhicule.
+
+\subsection{Remplacement de la relation ternaire ``Etre fait dans''}
+\label{subsec:relation-ternaire}
+Le schéma initial utilisait une relation ternaire entre \textbf{Stationnement}, \textbf{Véhicule} et \textbf{Place} avec une cardinalité globale (1,1), ce qui est ambigu et difficile à imposer en base relationnelle.
+Nous l’avons décomposée en deux associations binaires explicites :
+\begin{enumerate}
+  \item \textbf{Stationnement} -- \textbf{Place} : chaque stationnement se réalise sur exactement une place (1,1) ; une place peut accueillir plusieurs stationnements au fil du temps (0,n).
+  \item \textbf{Stationnement} -- \textbf{Véhicule} : chaque stationnement est effectué par un véhicule unique (1,1) ; un véhicule peut effectuer plusieurs stationnements (0,n).
+\end{enumerate}
+Cette factorisation rend les contraintes vérifiables (clés étrangères, unicités), et prépare l’extension du modèle (contrôles d’accès, capteurs, historique).
+
+\subsection{Tarification : Catégorie P et Créneaux}
+\label{subsec:tarification}
+Pour distinguer les types de places (moto, vélo, voiture, etc.), nous introduisons l’entité \textbf{Catégorie P} qui typise les places et sert de pivot pour la tarification.
+Afin de modéliser un prix horaire variable selon l’heure de la journée (et éventuellement le jour), nous ajoutons \textbf{Créneaux}, qui définit des intervalles temporels avec un \emph{prix\_horaire} applicable pendant l’intervalle.
+
+\paragraph{Unicité du Tarif par couple (Parking, Catégorie)}
+Nous imposons l’unicité du \textbf{Tarif} pour chaque couple \((\textit{Parking}, \textit{Catégorie P})\).
+Formellement, la dépendance fonctionnelle est :
+\[
+(\textit{Parking}, \textit{Catégorie P}) \rightarrow \textit{Tarif}.
+\]
+Les variations intra-journalières ne sont \emph{pas} stockées dans \textit{Tarif} lui-même : elles sont déléguées à des \textbf{Créneaux} rattachés à ce tarif (relation 1--n).
+Ainsi, \textbf{Tarif} représente la politique tarifaire du couple, et \textbf{Créneaux} en porte le détail temporel.
+
+\subsection{Utilisateur (identité légale) et Compte (site web)}
+\label{subsec:utilisateur-compte}
+Nous distinguons :
+\begin{itemize}
+  \item \textbf{Utilisateur} : personne physique, identifiée par un numéro de pièce d’identité. Tous ses \textbf{Stationnements} peuvent être enregistrés, même sans compte web.
+  \item \textbf{Compte} : accès au site web. Cardinalités \(\textit{Utilisateur}\ (0,1)\) -- \((1,1)\ \textit{Compte}\) : un utilisateur peut ne pas avoir de compte ; un compte appartient à un et un seul utilisateur.
+\end{itemize}
+Cette séparation évite de confondre identité légale (traçabilité, contrôle) et identité numérique (authentification, préférences).
+
+\subsection{Appartenance des véhicules et action de stationner}
+\label{subsec:ownership-stationner}
+Deux relations distinctes couvrent des situations réelles :
+\begin{enumerate}
+  \item \textbf{Ownership} \(\textit{Véhicule} \leftrightarrow \textit{Utilisateur}\) : l’utilisateur peut posséder plusieurs véhicules (0,n). Selon la politique, le véhicule peut être mono-propriétaire (1,1) ou co-détenu (0,n).
+  \item \textbf{Stationner} \(\textit{Stationnement} \leftrightarrow \textit{Utilisateur}\) : indique \emph{qui} a garé \emph{quel} véhicule. Cette relation peut différer de l’ownership (voiturier, prêt, famille), offrant une flexibilité métier voulue.
+\end{enumerate}
+
+\subsection{Abonnements U (Utilisateur) et V (Véhicule)}
+\label{subsec:abonnements}
+Nous distinguons deux abonnements :
+\begin{itemize}
+  \item \textbf{Abonnement U} (porté par l’utilisateur) : l’abonné bénéficie de l’offre en garant n’importe quel véhicule.
+  \item \textbf{Abonnement V} (porté par le véhicule) : toute personne entrant avec un véhicule abonné bénéficie de l’abonnement (flotte, véhicule de fonction).
+\end{itemize}
+Ce découplage répond à des stratégies commerciales et des modalités de contrôle différentes (plaque vs identité).
+
 \chapter{Conclusion}
 Ce chapitre sera complété après l'implémentation, l'évaluation et les tests.
 
