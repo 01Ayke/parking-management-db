@@ -389,14 +389,12 @@ On décrit ici la création d’une base PostgreSQL locale pour le développemen
 
 
 \subsection{Installation et création de la base locale}
-Chaque membre du groupe installe PostgreSQL sur sa machine et crée une base dédiée pour les tests.  
-L’initialisation de la base se fait à l’aide des scripts fournis : \texttt{drop.sql}, \texttt{create.sql} et \texttt{insert.sql}.  
-Ces scripts permettent de créer les tables puis d’insérer un jeu minimal de données de test.
+Il est nécessaire d’installer PostgreSQL et de créer une base dédiée pour les tests.  
+La base est initialisée à l’aide des scripts fournis : \texttt{create.sql} et \texttt{insert.sql},  
+qui permettent de créer les tables et d’insérer un jeu minimal de données pour les tests.
 
 \subsection{Connexion serveur - base locale}
-Pour se connecter à la base depuis le serveur sans exposer les identifiants dans le code, nous utilisons des variables d’environnement stockées dans un fichier \texttt{.env}, propre à chaque machine. Ce fichier est ignoré par Git pour préserver la confidentialité.  
-
-Un exemple de fichier \texttt{.env} est présenté ci-dessous :
+Pour se connecter à la base depuis le serveur sans exposer les identifiants dans le code, nous utilisons des variables d’environnement stockées dans un fichier \texttt{.env}, propre à chaque machine, dont voici un  exemple ci-dessous :
 
 \begin{verbatim}
 PGHOST=localhost
@@ -419,25 +417,33 @@ const pool = new Pool({
 });
 \end{verbatim}
 
-Cette approche permet de sécuriser les informations sensibles et de faciliter la configuration de chaque environnement de développement.
+On peut ensuite exécuter des requêtes SQL via le pool, par exemple pour récupérer toutes les voitures :
 
-\chapter{Interface Utilisateur}
+\begin{verbatim}
+const result = await pool.query('SELECT * FROM vehicule');
+\end{verbatim}
 
-\section{Présentation de l'Interface}
+\section{Interface Utilisateur}
 
-L'interface utilisateur de notre application de gestion de parkings a été conçue pour offrir une expérience intuitive et fonctionnelle. Elle permet aux différents acteurs du système d'accéder aux données de manière sécurisée et organisée.
+L’interface utilisateur permet d’accéder facilement aux fonctionnalités et de voir clairement les informations du système de gestion des parkings.
 
 \subsection{Architecture de l'Interface}
 
 L'interface est structurée en une application web qui se décompose en deux écrans principaux :
 
 \subsubsection*{Écran de Connexion}
-La première page présentée à l'utilisateur est un formulaire de connexion qui permet :
+\label{subsubsec:ecran-connexion}
+
+L’écran de connexion gère plusieurs situations selon les informations saisies:
+
 \begin{itemize}
-    \item \textbf{Identification} : numéro de pièce d'identité
-    \item \textbf{Authentification} : nom d'utilisateur et mot de passe
-    \item \textbf{Inscription automatique} : si l'utilisateur n'existe pas, il est automatiquement créé
+    \item \textbf{Nouvel utilisateur}: Si l’identifiant n’existe pas dans la base, un nouvel utilisateur est créé ainsi qu’un compte associé.
+    \item \textbf{Utilisateur existant sans compte}: Si l’utilisateur existe mais n’a pas encore de compte, un compte est créé automatiquement.
+
+    \item \textbf{Utilisateur existant avec compte}: Si un compte existe déjà, le mot de passe est vérifié. En cas d’erreur, l’accès est refusé, sinon la connexion est validée.
 \end{itemize}
+
+
 
 \subsubsection*{Tableau de Bord Principal}
 Après authentification, l'utilisateur accède à un tableau de bord organisé en deux panneaux :
@@ -446,43 +452,37 @@ Après authentification, l'utilisateur accède à un tableau de bord organisé e
     \item \textbf{Panneau principal} : affichage des résultats des requêtes sous forme de tableaux
 \end{itemize}
 
-\section{Flux de Communication Client-Serveur}
+\subsection{Flux de Communication Client-Serveur}
 
-Le fonctionnement de l'interface repose sur une communication asynchrone entre le client (navigateur) et le serveur API. Le flux complet pour une requête typique suit une architecture REST standardisée en quatre étapes principales.
+Le fonctionnement de l'interface repose sur une communication asynchrone entre le client (navigateur) et le serveur API. Le flux complet pour une requête typique peut être décrit en cinq étapes principales :.
 
-\subsubsection*{1. Interaction Utilisateur}
-L'utilisateur interagit avec l'interface, par exemple en cliquant sur le bouton \texttt{"Voitures par parking"}. Le gestionnaire d'événements capture cette action et lance le processus.
+\subsubsection{Interaction Utilisateur}
+L'utilisateur interagit avec l'interface, par exemple en cliquant sur le bouton \texttt{"Voitures par parking"}. Le gestionnaire d’interface (\texttt{UIManager}) capture cet événement et prépare l’exécution de la requête.
 
-\subsubsection*{2. Construction et Envoi de la Requête}
-Le client construit une requête HTTP vers l'API REST du serveur :
-\begin{verbatim}
-GET /api/queries/voitures-par-parking
-\end{verbatim}
-La requête utilise la fonction JavaScript \texttt{fetch()} pour une communication asynchrone.
 
-\subsubsection*{3. Traitement Serveur et Base de Données}
-Le serveur Express.js route la requête vers le contrôleur approprié qui exécute la requête SQL correspondante sur la base PostgreSQL :
+\subsubsection{Construction et Envoi de la Requête}
+Le client construit l’URL de l’API à appeler, ici \texttt{/api/queries/voitures-par-parking}. Si des paramètres sont nécessaires, ils sont récupérés depuis les champs de la page. La requête est ensuite envoyée au serveur via \texttt{fetch}.
+
+\subsubsection{Traitement Serveur et Base de Données}
+Le serveur Express reçoit la requête et la dirige vers le routeur correspondant (\texttt{queryRoutes}). Dans notre exemple, la route \texttt{/voitures-par-parking} exécute la requête SQL suivante:
 
 \begin{verbatim}
-SELECT p.nom_parking, COUNT(v.id_vehicule) as nombre_voitures
-FROM parking p
-LEFT JOIN place pl ON p.id_parking = pl.id_parking
-LEFT JOIN stationnement s ON pl.id_place = s.id_place
-LEFT JOIN vehicule v ON s.id_vehicule = v.id_vehicule
-GROUP BY p.id_parking, p.nom_parking
-ORDER BY nombre_voitures DESC;
+        SELECT DISTINCT p.id_parking, p.nom_parking, v.id_vehicule, 
+        v.num_immatriculation
+        FROM stationnement s
+        JOIN place pl ON s.id_place = pl.id_place
+        JOIN parking p ON pl.id_parking = p.id_parking
+        JOIN vehicule v ON s.id_vehicule = v.id_vehicule
+        ORDER BY p.nom_parking, v.num_immatriculation;
 \end{verbatim}
 
-\subsubsection*{4. Réponse et Affichage}
-Le serveur retourne une réponse JSON structurée :
-\begin{verbatim}
-{
-    "success": true,
-    "data": [...],
-    "timestamp": "2025-12-04T10:30:00Z"
-}
-\end{verbatim}
-Le client reçoit cette réponse, formate les données et les affiche dans un tableau HTML dynamique.
+La base de données PostgreSQL retourne les résultats au serveur.
+\subsubsection{Réponse}
+Le serveur envoie la réponse au client au format JSON, contenant soit les données demandées, soit un message d’erreur en cas de problème.
+
+\subsubsection{Affichage}
+Le gestionnaire d’interface (\texttt{UIManager}) reçoit la réponse et met à jour la page web. Les informations sont affichées dans un tableau, accompagné d’un résumé de la requête (nombre d’enregistrements, type de requête, date d’exécution).
+
 
 \section{Hébergement en ligne}
 \label{subsec:hebergement}
@@ -497,7 +497,8 @@ Pour disposer d’une base accessible en ligne, nous utilisons Railway, une plat
 \subsection{Déploiement en ligne du serveur}
 \label{subsubsec:render}
 
-Le code de l’application est déployé sur Render, une plateforme cloud pour héberger des applications web. Les variables d’environnement sont définies directement dans le tableau de bord Render, sans fichier \texttt{.env}, en utilisant la valeur fournie par Railway (\ref{subsubsec:railway}). Render construit et exécute automatiquement le serveur API, fournit une URL publique, et reconstruit l’application à chaque mise à jour du dépôt Git, assurant un accès permanent via un lien unique.
+Le code de l’application est déployé sur Render, une plateforme cloud pour héberger des applications web. Les variables d’environnement sont définies directement dans le tableau de bord Render, sans fichier \texttt{.env}, en utilisant les variables fournies par Railway (\ref{subsubsec:railway}). Render construit et exécute automatiquement le serveur API, fournit une URL publique, et reconstruit l’application à chaque mise à jour du dépôt Git, assurant un accès permanent via un lien unique.
+
 
 
 
