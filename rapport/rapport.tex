@@ -372,7 +372,7 @@ Dans ce projet, plusieurs scripts SQL ont été préparés pour gérer et manipu
     \item \textbf{drop.sql} : Sert à supprimer les tables et autres objets, généralement pour réinitialiser le schéma.
 \end{itemize}
 
-Globalement, les fichiers \texttt{create.sql} et \texttt{select.sql} constituent le cœur du workflow : le premier définit la structure avec des contraintes comme \texttt{NOT NULL} pour les données obligatoires, tandis que le second montre la flexibilité des requêtes grâce à l'utilisation de variables.
+Ces requêtes seront ensuite réutilisées dans des fonctions JavaScript afin de paramétrer et d’exécuter dynamiquement les opérations côté client/serveur. Cette intégration sera abordée dans la section \ref{sec:application}.
 
 
 
@@ -503,7 +503,12 @@ Le code de l’application est déployé sur Render, une plateforme cloud pour h
 
 
 \chapter{Conclusion}
-Ce chapitre sera complété après l'implémentation, l'évaluation et les tests.
+
+Ce projet de conception et d'implémentation d'un système de gestion des parkings nous a permis d'explorer l'ensemble du cycle de développement d'une base de données relationnelle, depuis la modélisation conceptuelle jusqu'au déploiement d'une application web fonctionnelle.
+
+Notre modèle amélioré, qui distingue clairement les utilisateurs physiques de leurs comptes en ligne, sépare la propriété des véhicules de l'action de stationner, et propose une tarification flexible basée sur les catégories de places et les créneaux horaires, constitue une base solide et extensible pour un système de gestion de parkings moderne.
+
+Ce projet illustre parfaitement comment une modélisation rigoureuse des données permet de construire un système flexible et évolutif. La mise en œuvre complète du système—depuis la base PostgreSQL jusqu'à l'application web déployée sur Render—démontre l'importance d'une vision holistique du développement logiciel, où la qualité de la modélisation des données impacte directement la maintenabilité et l'extensibilité de l'ensemble de l'application.
 
 \newpage
 \chapter{Annexe}
