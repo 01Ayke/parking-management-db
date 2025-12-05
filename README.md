@@ -1,8 +1,36 @@
 # README - Système de Gestion de Parking
 
-Afin de lancer cette application, suivez les étapes ci-dessous :
+## Structure du projet
 
----
+parking/
+├── sql/                           # Scripts SQL
+│   ├── create.sql                 # Création des tables
+│   ├── drop.sql                   # Suppression des tables
+│   ├── insert.sql                 # Insertion des données
+│   ├── select.sql                 # Requêtes de consultation
+│   └── update.sql                 # Requêtes de mise à jour
+├── app/                           # Application web
+│   ├── server/                    # Backend (Node.js)
+│   └── public/                    # Frontend
+├── rapport/                      # Sources du rapport
+├── schema/                       # Schémas conceptuels
+└── README.md                     # Ce fichier
+
+
+**Description des dossiers :**
+- `sql/` : Contient tous les scripts SQL (création, insertion, requêtes, etc.)
+- `app/` : Application web complète (frontend + backend)
+    - `app/server` : Backend 
+    - `app/public` : Frontend
+- `rapport/` : Sources du rapport LaTeX
+- `schema/` : Schémas conceptuels de la base de données
+
+
+--------------------------------------------------------------
+
+
+Afin de lancer cette application, suivez les étapes ci-dessous: 
+
 
 ## 1. Création et initialisation de la base de données locale
 
@@ -40,28 +68,3 @@ Dans le répertoire ./app/, créez un fichier .env contenant les variables suiva
 
 ## 4.Vous pouvez également accéder à l’application via notre URL publique : https://parking-app-521c.onrender.com
 
-## Structure du projet
-
-parking/
-├── sql/                           # Scripts SQL
-│   ├── create.sql                 # Création des tables
-│   ├── drop.sql                   # Suppression des tables
-│   ├── insert.sql                 # Insertion des données
-│   ├── select.sql                 # Requêtes de consultation
-│   └── update.sql                 # Requêtes de mise à jour
-├── app/                           # Application web
-│   ├── server/                    # Backend (Node.js)
-│   └── public/                    # Frontend
-├── rapport/                      # Sources du rapport
-├── schema/                       # Schémas conceptuels
-└── README.md                     # Ce fichier
-
-
-**Description des dossiers :**
-- `sql/` : Contient tous les scripts SQL (création, insertion, requêtes, etc.)
-- `app/` : Application web complète (frontend + backend)
-    - `app/server` : Backend 
-    - `app/public` : Frontend
-- `rapport/` : Sources du rapport LaTeX
-- `schema/` : Schémas conceptuels de la base de données
----
