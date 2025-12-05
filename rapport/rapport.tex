@@ -390,24 +390,69 @@ const pool = new Pool({
 \end{verbatim}
 
 Cette approche permet de sécuriser les informations sensibles et de faciliter la configuration de chaque environnement de développement.
-\section{Interface}
-\label{subsec:interface}
 
-L’interface permet aux utilisateurs d’accéder aux fonctionnalités de l’application et de visualiser les informations principales de manière claire.
+\chapter{Interface Utilisateur}
 
-s
-\subsection{Présentation de la page}
-\label{subsubsec:presentation-page}
+\section{Présentation de l'Interface}
 
-L’interface web permet aux utilisateurs de s’authentifier puis d’accéder à un tableau de bord regroupant les fonctionnalités principales de l’application.  
-Elle offre une vue générale des parkings, des véhicules, des places disponibles ...  \\
-L’utilisateur peut sélectionner des requêtes à exécuter via des boutons et saisir certains paramètres (ID véhicule, parking ou place...) pour filtrer les résultats.  
+L'interface utilisateur de notre application de gestion de parkings a été conçue pour offrir une expérience intuitive et fonctionnelle. Elle permet aux différents acteurs du système d'accéder aux données de manière sécurisée et organisée.
 
+\subsection{Architecture de l'Interface}
 
-\subsection{Serveur API et gestion des requêtes}
-\label{subsubsec:server-api}
+L'interface est structurée en une application web qui se décompose en deux écrans principaux :
 
-Le serveur API gère toutes les requêtes provenant de l’interface. Chaque action de l’utilisateur déclenche un appel au serveur, qui exécute les requêtes SQL sur la base de données et renvoie les résultats à l’interface.
+\subsubsection*{Écran de Connexion}
+La première page présentée à l'utilisateur est un formulaire de connexion qui permet :
+\begin{itemize}
+    \item \textbf{Identification} : numéro de pièce d'identité
+    \item \textbf{Authentification} : nom d'utilisateur et mot de passe
+    \item \textbf{Inscription automatique} : si l'utilisateur n'existe pas, il est automatiquement créé
+\end{itemize}
+
+\subsubsection*{Tableau de Bord Principal}
+Après authentification, l'utilisateur accède à un tableau de bord organisé en deux panneaux :
+\begin{itemize}
+    \item \textbf{Panneau latéral} : liste des requêtes disponibles avec leurs paramètres
+    \item \textbf{Panneau principal} : affichage des résultats des requêtes sous forme de tableaux
+\end{itemize}
+
+\section{Flux de Communication Client-Serveur}
+
+Le fonctionnement de l'interface repose sur une communication asynchrone entre le client (navigateur) et le serveur API. Le flux complet pour une requête typique suit une architecture REST standardisée en quatre étapes principales.
+
+\subsubsection*{1. Interaction Utilisateur}
+L'utilisateur interagit avec l'interface, par exemple en cliquant sur le bouton \texttt{"Voitures par parking"}. Le gestionnaire d'événements capture cette action et lance le processus.
+
+\subsubsection*{2. Construction et Envoi de la Requête}
+Le client construit une requête HTTP vers l'API REST du serveur :
+\begin{verbatim}
+GET /api/queries/voitures-par-parking
+\end{verbatim}
+La requête utilise la fonction JavaScript \texttt{fetch()} pour une communication asynchrone.
+
+\subsubsection*{3. Traitement Serveur et Base de Données}
+Le serveur Express.js route la requête vers le contrôleur approprié qui exécute la requête SQL correspondante sur la base PostgreSQL :
+
+\begin{verbatim}
+SELECT p.nom_parking, COUNT(v.id_vehicule) as nombre_voitures
+FROM parking p
+LEFT JOIN place pl ON p.id_parking = pl.id_parking
+LEFT JOIN stationnement s ON pl.id_place = s.id_place
+LEFT JOIN vehicule v ON s.id_vehicule = v.id_vehicule
+GROUP BY p.id_parking, p.nom_parking
+ORDER BY nombre_voitures DESC;
+\end{verbatim}
+
+\subsubsection*{4. Réponse et Affichage}
+Le serveur retourne une réponse JSON structurée :
+\begin{verbatim}
+{
+    "success": true,
+    "data": [...],
+    "timestamp": "2025-12-04T10:30:00Z"
+}
+\end{verbatim}
+Le client reçoit cette réponse, formate les données et les affiche dans un tableau HTML dynamique.
 
 \section{Hébergement en ligne}
 \label{subsec:hebergement}
