@@ -54,6 +54,7 @@
 \set mot_de_passe 'password123'
 \set date_creation '2023-01-01'
 
+\set id_creneau 1
 -- ============================================================
 -- TABLE commune
 -- ============================================================
@@ -162,14 +163,14 @@ UPDATE creneau
 SET prix = :prix,
     debut_creneau = :'debut_creneau',
     fin_creneau = :'fin_creneau'
-WHERE id_creneau = :id_creneau;
+WHERE id_creneau = :'id_creneau';
 
 -- ============================================================
 -- TABLE diviser
 -- ============================================================
 UPDATE diviser
-SET id_tarif = :id_tarif
-WHERE id_creneau = :id_creneau;
+SET id_tarif = :'id_tarif'
+WHERE id_creneau = :'id_creneau';
 
 -- ============================================================
 -- TABLE compte
@@ -178,19 +179,19 @@ UPDATE compte
 SET identifiant = :'identifiant',
     mot_de_passe = :'mot_de_passe',
     date_creation = :'date_creation',
-    id_utilisateur = :id_utilisateur
-WHERE id_compte = :id_compte;
+    id_utilisateur = :'id_utilisateur'
+WHERE id_compte = :'id_compte';
 
 -- ============================================================
 -- TABLE appliquer
 -- ============================================================
 UPDATE appliquer
-SET id_tarif = :id_tarif
-WHERE id_parking = :id_parking AND id_categorie_place = :id_categorie_place;
+SET id_tarif = :'id_tarif'
+WHERE id_parking = :'id_parking' AND id_categorie_place = :'id_categorie_place';
 
 -- ============================================================
 -- TABLE proposer_auv
 -- ============================================================
 UPDATE proposer_auv
-SET id_parking = :id_parking
-WHERE id_abonnement = :id_abonnement;
+SET id_parking = :'id_parking'
+WHERE id_abonnement = :'id_abonnement';
