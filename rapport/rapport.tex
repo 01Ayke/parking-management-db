@@ -364,6 +364,10 @@ Dans ce projet, plusieurs scripts SQL ont été préparés pour gérer et manipu
     SELECT * FROM nom_table WHERE id = :id;
     \end{verbatim}
     Cela permet de référencer \texttt{:id} dans les requêtes, ce qui facilite la paramétrisation et les tests avec différentes valeurs sans modifier les requêtes SQL.
+
+    Pour évaluer l’utilisation des parkings et des véhicules, plusieurs requêtes statistiques ont été mises en place. 
+    Ces statistiques reposent sur l’analyse des données de stationnement, des places et des tarifs, et fournissent une vue synthétique de l’activité et de la rentabilité du système de parkings.
+
     
     \item \textbf{insert.sql} : Sert à insérer des données initiales dans les tables. Pour que les prochaines insertions automatiques ne créent pas de doublons. Nous utilisons \texttt{setval} pour positionner chaque séquence sur la valeur maximale déjà présente
     
