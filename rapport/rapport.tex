@@ -37,8 +37,7 @@
     \begin{flushleft}
 {\large \textbf{Encadrant :}} \\
 \vspace{0.2cm}
-{\Large Nom de l'encadrant : \textit{LOMBARDY} Sylvain} \\ 
-{\Large Nom de l'encadrant : \textit{MOSABAH} Mohamed} \\ 
+{\Large Nom de l'encadrant : \\ \textit{LOMBARDY} Sylvain \\ \textit{MOSABAH} Mohamed} \\ 
 \end{flushleft}
 
 \vspace{1.5cm}
@@ -94,9 +93,8 @@ Afin de lever certaines ambiguïtés, nous posons les hypothèses suivantes :
     \item un stationnement est associé à un véhicule, une place et éventuellement un utilisateur ;
     \item des tables d'association gèrent les relations plusieurs-à-plusieurs (abonnements/véhicules et abonnements/utilisateurs).
 \end{itemize}
-\chapter{Modélisation Conceptuelle}
 
-\section{Modèle Conceptuel Initial}
+\chapter{Modèle conceptuel initial}
 
 Le premier modèle conceptuel de données (MCD) proposé est présenté ci-dessous. 
 Il constitue une première base de réflexion sur les entités importantes du système 
@@ -125,11 +123,11 @@ Des associations structurent ces entités :
     \item \textbf{Appliquer} : un tarif est appliqué à un parking (relation floue dans ce modèle initial).
 \end{itemize}
 
-\section{Limites du Modèle Initial}
+\section{Limites du modèle initial}
 
 Bien que fonctionnel pour une première approche, ce modèle présente plusieurs limites :
 
-\subsection*{1. Absence d'entités essentielles}
+\subsubsection*{1. Absence d'entités essentielles}
 Le modèle initial ne prend pas en compte :
 \begin{itemize}
     \item les \textbf{utilisateurs} (propriétaires de véhicules, clients du parking),
@@ -138,21 +136,21 @@ Le modèle initial ne prend pas en compte :
     \item les \textbf{catégories de places} (standard, PMR, électrique…).
 \end{itemize}
 
-\subsection*{2. Relations imprécises ou insuffisantes}
+\subsubsection*{2. Relations imprécises ou insuffisantes}
 \begin{itemize}
     \item La relation \textbf{Appliquer} ne précise pas à quoi le tarif s’applique (parking seul ? place ? catégorie ?).
     \item La date du tarif est insuffisante : un tarif doit définir au minimum une \textbf{plage horaire} (heure début / heure fin).
     \item Le lien entre place et véhicule n’est pas direct : il transite seulement via stationnement, ce qui peut être correct mais doit être clarifié.
 \end{itemize}
 
-\subsection*{3. Attributs manquants}
+\subsubsection*{3. Attributs manquants}
 \begin{itemize}
     \item absence d’attributs essentiels pour les utilisateurs ;
     \item manque de gestion du paiement ou du mode de paiement ;
     \item pas de gestion des \textbf{capacités réelles} ou des états de place (\textit{libre, occupée, réservée}).
 \end{itemize}
 
-\subsection*{4. Problèmes d’évolution du système}
+\subsubsection*{4. Problèmes d’évolution du système}
 Le modèle initial permet difficilement :
 \begin{itemize}
     \item d'ajouter de nouveaux types de places ;
@@ -160,7 +158,7 @@ Le modèle initial permet difficilement :
     \item de gérer plusieurs abonnements pour un même utilisateur.
 \end{itemize}
 
-\section{Modèle Conceptuel Amélioré}
+\chapter{Modèle amélioré}
 
 À partir de ces limites, un modèle conceptuel amélioré a été construit. Ce modèle corrige 
 les problèmes identifiés et enrichit le système pour répondre complètement aux besoins du projet.
@@ -174,42 +172,19 @@ les problèmes identifiés et enrichit le système pour répondre complètement 
 Le modèle final intègre les nouvelles entités et relations suivantes :
 
 Ainsi, le modèle final constitue une base robuste et normalisée pour la création de la base de données relationnelle.
-\chapter{Modèle Relationnel}
 
-\section{Notations}
+\section{Modèle Relationnel Amélioré}
+
+À partir du modèle conceptuel amélioré, le modèle relationnel a été enrichi pour mieux couvrir les besoins fonctionnels du système.
+
+\subsection{Notations}
 Dans ce qui suit, nous utiliserons les conventions suivantes :
 \begin{itemize}
     \item les \textbf{clés primaires} sont \underline{soulignées} ;
     \item les \textbf{clés étrangères} sont précédées du symbole \#.
 \end{itemize}
 
-\section{Modèle Relationnel Initial}
-
-À partir du modèle conceptuel initial, on obtient le modèle relationnel suivant.
-
-\subsection*{Relations du modèle initial}
-
-\begin{itemize}
-    \item \textbf{COMMUNE}(\underline{id\_commune}, code\_postal, nom)
-    
-    \item \textbf{PARKING}(\underline{id\_parking}, nom, type, adresse, capacite, \#id\_commune)
-    
-    \item \textbf{PLACE}(\underline{id\_place}, etat\_place, \#id\_parking)
-    
-    \item \textbf{VEHICULE}(\underline{id\_vehicule}, num\_immatriculation, marque, date\_de\_fabrication, etat, kilometrage)
-    
-    \item \textbf{TARIF}(\underline{id\_tarif}, prix, date)
-    
-    \item \textbf{STATIONNEMENT}(\underline{id\_stationnement}, date, heure\_debut, heure\_fin, \#id\_vehicule, \#id\_place, \#id\_tarif)
-\end{itemize}
-
-Ce premier modèle relationnel reprend les entités principales (commune, parking, place, véhicule, tarif, stationnement), mais reste limité pour exprimer certains besoins avancés (utilisateurs, abonnements, catégories de places, tarification détaillée, etc.).
-
-\section{Modèle Relationnel Amélioré}
-
-À partir du modèle conceptuel amélioré, le modèle relationnel a été enrichi pour mieux couvrir les besoins fonctionnels du système.
-
-\subsection*{Relations du modèle amélioré}
+\subsection{Schèma relationnel}
 
 \begin{itemize}
     \item \textbf{COMMUNE}(\underline{id\_commune}, code\_postal, nom\_commune)
@@ -249,7 +224,11 @@ Ce premier modèle relationnel reprend les entités principales (commune, parkin
     
     \item \textbf{STATIONNEMENT}(\underline{id\_stationnement}, date\_debut, date\_fin, heure\_debut, heure\_fin,
     mode\_paiement, \#id\_vehicule, \#id\_place, \#id\_utilisateur)
+    
+    \item \textbf{DIVISER}(\underline{\#id\_tarif \#id\_creneau})
 \end{itemize}
+
+
 
 \subsection*{Commentaires sur l'évolution du modèle}
 
@@ -315,7 +294,7 @@ Nous distinguons deux abonnements :
   \item \textbf{Abonnement V} (porté par le véhicule) : toute personne entrant avec un véhicule abonné bénéficie de l’abonnement (flotte, véhicule de fonction).
 \end{itemize}
 Ce découplage répond à des stratégies commerciales et des modalités de contrôle différentes (plaque vs identité).
-
+-
 \chapter{Conclusion}
 Ce chapitre sera complété après l'implémentation, l'évaluation et les tests.
 
