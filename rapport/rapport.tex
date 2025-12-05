@@ -11,6 +11,7 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{graphicx}
+\usepackage{float}
 \graphicspath{{images/}}
 \makeatletter
 \def\chapter{\@startsection {chapter}{0}{\z@}
@@ -83,23 +84,12 @@ Le projet vise à :
     \item permettre l'évolution du schéma pour des besoins futurs.
 \end{itemize}
 
-\section{Hypothèses}
-Afin de lever certaines ambiguïtés, nous posons les hypothèses suivantes :
-\begin{itemize}
-    \item un parking appartient à une seule commune ;
-    \item une place appartient à un seul parking et à une seule catégorie ;
-    \item un tarif correspond à un intervalle de temps, mais peut être appliqué à plusieurs parkings et catégories ;
-    \item un utilisateur peut avoir plusieurs véhicules et plusieurs abonnements ;
-    \item un stationnement est associé à un véhicule, une place et éventuellement un utilisateur ;
-    \item des tables d'association gèrent les relations plusieurs-à-plusieurs (abonnements/véhicules et abonnements/utilisateurs).
-\end{itemize}
-
 \chapter{Modèle conceptuel initial}
 
 Le premier modèle conceptuel de données (MCD) proposé est présenté ci-dessous. 
 Il constitue une première base de réflexion sur les entités importantes du système 
 de gestion des parkings du campus.
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=14cm]{modele-concep-init.png}
     \caption{Modèle Conceptuel Initial du système}
@@ -159,14 +149,25 @@ les problèmes identifiés et enrichit le système pour répondre complètement 
 
 \section{Schèma conceptuel du modèle}
 
-\begin{figure}[h]
+Afin d’éviter toute ambiguïté lors de la modélisation, nous retenons les hypothèses suivantes :
+\begin{itemize}
+    \item Chaque parking est associé à une seule commune.
+    \item Chaque place appartient à un unique parking et correspond à une seule catégorie.
+    \item Un tarif définit de manière unique la politique de tarification pour un couple \textit{(parking, catégorie de place)}.
+    \item Un tarif peut être composé d’un ou plusieurs créneaux, chacun représentant le prix horaire applicable sur un intervalle de temps donné.
+    \item Un utilisateur peut garer un véhicule dont il n’est pas propriétaire.
+    \item Un véhicule ou un utilisateur peut souscrire plusieurs abonnements (par exemple dans différents parkings).
+    \item Un utilisateur peut utiliser le parking sans disposer d’un compte sur le site.
+\end{itemize}
+
+La figure ci-dessous représente le schèma conceptuel du modèle amélioré en tenant compte de ces hypothèses.
+
+\begin{figure}[H]
     \centering
-    \includegraphics[width=15cm]{version-ameliore.png}
+    \hspace*{-0.8cm}
+    \includegraphics[width=18cm]{version-ameliore.png}
     \caption{Modèle Conceptuel Amélioré du système}
 \end{figure}
-
-
-Ainsi, le modèle final constitue une base robuste et normalisée pour la création de la base de données relationnelle.
 
 \section{Schèma relationnel du modèle}
 
@@ -212,6 +213,7 @@ Ainsi, le modèle final constitue une base robuste et normalisée pour la créat
     mode\_paiement, \#id\_vehicule, \#id\_place, \#id\_utilisateur)
     
     \item \textbf{CRENEAU}(\underline{id\_creneau}, prix\_horaire, tstmp\_debut, tstmp\_fin)
+    \item \textbf{TARIF}(\underline{id\_tarif})
     \item \textbf{DIVISER}(\underline{\#id\_tarif \#id\_creneau})
 \end{itemize}
 
