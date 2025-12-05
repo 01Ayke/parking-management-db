@@ -110,7 +110,7 @@ CREATE TABLE posseder_au (
 CREATE TABLE stationnement (
     id_stationnement SERIAL PRIMARY KEY,
     date_debut DATE NOT NULL,
-    date_fin DATE NOT NULL,
+    date_fin DATE,
     heure_debut TIME NOT NULL,
     heure_fin TIME NOT NULL,
     mode_paiement VARCHAR(255) CHECK (mode_paiement IN ('Carte', 'Espèces', 'Mobile', 'Abonnement')),
@@ -135,7 +135,7 @@ CREATE TABLE tarif (
 -- ============================================================
 CREATE TABLE creneau (
     id_creneau SERIAL PRIMARY KEY,
-    prix FlOAT NOT NULL CHECK (prix >= 0),
+    prix NUMERIC(5,2) NOT NULL CHECK (prix >= 0),
     debut_creneau TIME NOT NULL,
     fin_creneau TIME NOT NULL,
     CONSTRAINT check_creneau_different CHECK (debut_creneau != fin_creneau)
@@ -178,8 +178,9 @@ CREATE TABLE appliquer (
 --   Table : Proposer A[UV]                                         
 -- ============================================================
 CREATE TABLE proposer_auv (
-    id_abonnement INTEGER PRIMARY KEY NOT NULL,
+    id_abonnement INTEGER NOT NULL,
     id_parking INTEGER NOT NULL,
     CONSTRAINT fk_proposer_auv_abonnement FOREIGN KEY(id_abonnement) REFERENCES abonnement(id_abonnement),
-    CONSTRAINT fk_proposer_auv_parking FOREIGN KEY(id_parking) REFERENCES parking(id_parking)
+    CONSTRAINT fk_proposer_auv_parking FOREIGN KEY(id_parking) REFERENCES parking(id_parking),
+    PRIMARY KEY (id_abonnement, id_parking)
 );
